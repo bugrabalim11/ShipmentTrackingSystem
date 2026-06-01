@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="ShipmentTracking.API/ShipmentTracking.API.csproj" />
+  <Project Path="ShipmentTracking.Business/ShipmentTracking.Business.csproj" />
+  <Project Path="ShipmentTracking.DataAccess/ShipmentTracking.DataAccess.csproj" />
+  <Project Path="ShipmentTracking.Entities/ShipmentTracking.Entities.csproj" />
+</Solution>
