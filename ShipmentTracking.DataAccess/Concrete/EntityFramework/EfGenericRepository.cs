@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ShipmentTracking.DataAccess.Abstarct;
+using ShipmentTracking.DataAccess.Abstract;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace ShipmentTracking.DataAccess.Concrete.EntityFramework
 {
-    // Bu sınıf, yukarıda yazdığımız kuralları (IGenericRepository) gerçekten işleyecek olan sınıftır.
+    // Bu sınıf, yazdığımız kuralları (IGenericRepository) gerçekten işleyecek olan sınıftır.
     public class EfGenericRepository<T> : IGenericRepository<T> where T : class
     {
         protected readonly AppDbContext _context;

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ShipmentTracking.DataAccess.Abstarct;
+using ShipmentTracking.DataAccess.Abstract;
 using ShipmentTracking.Entities.Concrete;
 using System;
 using System.Collections.Generic;

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ShipmentTracking.DataAccess.Abstarct
+namespace ShipmentTracking.DataAccess.Abstract
 {
     // IGenericRepository'nin tüm yeteneklerini Shipment sınıfı için miras alıyoruz.
     public interface IShipmentRepository : IGenericRepository<Shipment>
