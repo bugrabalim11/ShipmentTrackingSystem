@@ -21,5 +21,8 @@ namespace ShipmentTracking.Entities.Concrete
 
         // Kargonun oluşturulma zamanı
         public DateTime CreatedDate { get; set; }
+
+        // YENİ EKLENEN KISIM: Bire-Çok İlişki (Bir kargonun birden fazla geçmişi olur)
+        public List<ShipmentHistory> ShipmentHistories { get; set; } = new List<ShipmentHistory>();
     }
 }
