@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using ShipmentTracking.API.Extensions;
 using ShipmentTracking.Business.Abstract;
 using ShipmentTracking.Business.Concrete;
@@ -6,27 +7,31 @@ using ShipmentTracking.DataAccess.Concrete.EntityFramework;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// API ve Swagger servisleri
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-// Program.cs içinde sadece bunu çağırman yeterli:
+// Veritabanı bağlantısı
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+// Senin Business servislerin
 builder.Services.AddBusinessServices();
-
-builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Swagger'ı arayüze ekleme kısmı
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
