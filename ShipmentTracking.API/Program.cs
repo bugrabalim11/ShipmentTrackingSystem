@@ -1,9 +1,18 @@
+using ShipmentTracking.API.Extensions;
+using ShipmentTracking.Business.Abstract;
+using ShipmentTracking.Business.Concrete;
+using ShipmentTracking.DataAccess.Abstract;
+using ShipmentTracking.DataAccess.Concrete.EntityFramework;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+// Program.cs içinde sadece bunu çağırman yeterli:
+builder.Services.AddBusinessServices();
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
