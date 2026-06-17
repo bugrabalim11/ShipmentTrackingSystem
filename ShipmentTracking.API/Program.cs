@@ -9,6 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // API ve Swagger servisleri
 builder.Services.AddControllers();
+
+// AutoMapper'ı sisteme dahil ediyoruz ve sözlüğümüzün yerini gösteriyoruz
+builder.Services.AddAutoMapper(typeof(ShipmentTracking.Business.Profiles.MappingProfile).Assembly);
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

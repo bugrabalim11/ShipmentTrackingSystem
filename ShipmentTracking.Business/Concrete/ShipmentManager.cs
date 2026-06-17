@@ -1,6 +1,8 @@
-﻿using ShipmentTracking.Business.Abstract;
+﻿using AutoMapper;
+using ShipmentTracking.Business.Abstract;
 using ShipmentTracking.DataAccess.Abstract;
 using ShipmentTracking.Entities.Concrete;
+using ShipmentTracking.Entities.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,42 +13,71 @@ namespace ShipmentTracking.Business.Concrete
     {
         // Business katmanı veritabanı ile değil, Veznedar (Repository) ile konuşur!
         private readonly IShipmentRepository _shipmentRepository;
+        private readonly IMapper _mapper;
 
         // Dependency Injection ile Repository'yi içeri alıyoruz
-        public ShipmentManager(IShipmentRepository shipmentRepository)
+        public ShipmentManager(IShipmentRepository shipmentRepository, IMapper mapper)
         {
             _shipmentRepository = shipmentRepository;
+            _mapper = mapper;
         }
 
-        public async Task AddAsync(Shipment shipment)
+        public async Task AddAsync(ShipmentCreateDto shipmentCreateDto)
         {
-            // İleride buraya "Takip numarası boş mu?" gibi kontrolleri ekleyeceğiz.
+            var shipment = _mapper.Map<Shipment>(shipmentCreateDto);
+
+            // Kullanıcıdan gizlediğimiz alanları sistem otomatik dolduruyor
+            shipment.Status = "Hazırlanıyor";
+            shipment.CreatedDate = DateTime.UtcNow;
+
             await _shipmentRepository.AddAsync(shipment);
         }
 
-        public async Task DeleteAsync(Shipment shipment)
+        public async Task DeleteAsync(int id)
         {
-            _shipmentRepository.Delete(shipment);
+            var shipment = await _shipmentRepository.GetByIdAsync(id);
+            if(shipment != null)
+            {
+                // DEĞİŞEN KISIM: Repository'de DeleteAsync olmadığı için Delete kullanıyoruz
+                _shipmentRepository.Delete(shipment);
+            }
         }
 
-        public async Task<Shipment?> GetByIdAsync(int id)
+        public async Task<ShipmentListDto?> GetByIdAsync(int id)
         {
-            return await _shipmentRepository.GetByIdAsync(id);
+            var shipment = await _shipmentRepository.GetByIdAsync(id);
+            if(shipment == null) return null;
+
+            return _mapper.Map<ShipmentListDto>(shipment);
         }
 
-        public async Task<List<Shipment>> GetListAsync()
+        public async Task<List<ShipmentListDto>> GetListAsync()
         {
-            return await _shipmentRepository.GetAllAsync();
+            var shipments = await _shipmentRepository.GetAllAsync(); // Veritabanından asenkron çek
+            return _mapper.Map<List<ShipmentListDto>>(shipments);    // Vitrin formuna çevir ve dön
         }
 
+        // Özel Geçmişli Metot (Şimdilik ham bırakıyoruz demiştik)
         public async Task<Shipment?> GetShipmentWithHistoryAsync(int id)
         {
             return await _shipmentRepository.GetShipmentWithHistoryAsync(id);
         }
 
-        public async Task UpdateAsync(Shipment shipment)
+        public async Task UpdateAsync(ShipmentUpdateDto shipmentUpdateDto)
         {
-            _shipmentRepository.Update(shipment);
+            // Önce güncellenecek kargo gerçekten veritabanında var mı diye kontrol ediyoruz
+            var existingShipment = await _shipmentRepository.GetByIdAsync(shipmentUpdateDto.Id);
+            if (existingShipment == null)
+            {
+                throw new Exception("Güncellenmek istenen kargo bulunamadı!");
+            }
+
+            // AutoMapper Sihri: Kullanıcıdan gelen güncel form bilgilerini (shipmentUpdateDto), 
+            // veritabanından çektiğimiz orijinal nesnenin (existingShipment) üzerine yazar.
+            _mapper.Map(shipmentUpdateDto, existingShipment);
+
+            // DEĞİŞEN KISIM: Repository'de UpdateAsync olmadığı için Update kullanıyoruz
+            _shipmentRepository.Update(existingShipment);
         }
     }
 }
