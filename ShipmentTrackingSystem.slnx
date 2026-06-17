@@ -3,4 +3,5 @@
   <Project Path="ShipmentTracking.Business/ShipmentTracking.Business.csproj" />
   <Project Path="ShipmentTracking.DataAccess/ShipmentTracking.DataAccess.csproj" />
   <Project Path="ShipmentTracking.Entities/ShipmentTracking.Entities.csproj" />
+  <Project Path="ShipmentTracking.WebUI/ShipmentTracking.WebUI.csproj" Id="98e55f57-fa6a-4722-84a4-5767d9daa715" />
 </Solution>
