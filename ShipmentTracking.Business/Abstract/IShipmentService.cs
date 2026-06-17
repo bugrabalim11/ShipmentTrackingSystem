@@ -1,5 +1,5 @@
 ﻿using ShipmentTracking.Entities.Concrete;
-using ShipmentTracking.Entities.DTOs;
+using ShipmentTracking.Entities.DTOs.Shipment;
 using System;
 using System.Collections.Generic;
 using System.Text;

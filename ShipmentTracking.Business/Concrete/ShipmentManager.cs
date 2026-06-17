@@ -2,7 +2,7 @@
 using ShipmentTracking.Business.Abstract;
 using ShipmentTracking.DataAccess.Abstract;
 using ShipmentTracking.Entities.Concrete;
-using ShipmentTracking.Entities.DTOs;
+using ShipmentTracking.Entities.DTOs.Shipment;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -69,7 +69,7 @@ namespace ShipmentTracking.Business.Concrete
             var existingShipment = await _shipmentRepository.GetByIdAsync(shipmentUpdateDto.Id);
             if (existingShipment == null)
             {
-                throw new Exception("Güncellenmek istenen kargo bulunamadı!");
+                throw new KeyNotFoundException(); // Düz metin yok, standart C# hatası var!
             }
 
             // AutoMapper Sihri: Kullanıcıdan gelen güncel form bilgilerini (shipmentUpdateDto), 

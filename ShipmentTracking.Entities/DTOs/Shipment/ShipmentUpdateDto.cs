@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ShipmentTracking.Entities.DTOs
+namespace ShipmentTracking.Entities.DTOs.Shipment
 {
     public class ShipmentUpdateDto
     {

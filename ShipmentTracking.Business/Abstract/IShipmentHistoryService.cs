@@ -1,4 +1,6 @@
 ﻿using ShipmentTracking.Entities.Concrete;
+using ShipmentTracking.Entities.DTOs.Shipment;
+using ShipmentTracking.Entities.DTOs.ShipmentHistory;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,12 +9,12 @@ namespace ShipmentTracking.Business.Abstract
 {
     public interface IShipmentHistoryService
     {
-        Task<List<ShipmentHistory>> GetAllAsync();
-        Task<ShipmentHistory?> GetByIdAsync(int id);
-        Task AddAsync(ShipmentHistory shipmentHistory);
+        Task<List<ShipmentHistoryListDto>> GetAllAsync();
+        Task<ShipmentHistoryListDto?> GetByIdAsync(int id);
+        Task AddAsync(ShipmentHistoryCreateDto shipmentHistoryCreateDto);
 
         // Bunları da "Task" ile uyumlu hale getirelim:
-        Task UpdateAsync(ShipmentHistory shipmentHistory);
-        Task DeleteAsync(ShipmentHistory shipmentHistory);
+        Task UpdateAsync(ShipmentHistoryUpdateDto shipmentHistoryUpdateDto);
+        Task DeleteAsync(int id);
     }
 }

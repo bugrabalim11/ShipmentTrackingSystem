@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ShipmentTracking.Business.Abstract;
 using ShipmentTracking.Entities.Concrete;
-using ShipmentTracking.Entities.DTOs;
+using ShipmentTracking.Entities.DTOs.Shipment;
 
 namespace ShipmentTracking.API.Controllers
 {

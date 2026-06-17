@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ShipmentTracking.Entities.Concrete;
-using ShipmentTracking.Entities.DTOs;
+using ShipmentTracking.Entities.DTOs.Shipment;
+using ShipmentTracking.Entities.DTOs.ShipmentHistory;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,6 +22,12 @@ namespace ShipmentTracking.Business.Profiles
             // ---> YENİ EKLENDİ <---
             // Güncelleme işlemi için: Formu al, var olan veritabanı nesnesinin üzerine yaz
             CreateMap<ShipmentUpdateDto, Shipment>();
+
+
+            // ---> YENİ EKLENEN KISIM (ShipmentHistory) <---
+            CreateMap<ShipmentHistory, ShipmentHistoryListDto>();
+            CreateMap<ShipmentHistoryCreateDto, ShipmentHistory>();
+            CreateMap<ShipmentHistoryUpdateDto, ShipmentHistory>();
         }
     }
 }
