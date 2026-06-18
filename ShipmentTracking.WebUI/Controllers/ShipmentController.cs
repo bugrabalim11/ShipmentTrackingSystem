@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using ShipmentTracking.Entities.Concrete;
 using ShipmentTracking.Entities.DTOs.Shipment;
 using ShipmentTracking.Entities.DTOs.ShipmentHistory;
 using ShipmentTracking.WebUI.Models;
@@ -157,6 +158,38 @@ namespace ShipmentTracking.WebUI.Controllers
             }
             // Torbamızı (ViewModel) arayüze gönderiyoruz
             return View(viewModel);
+        }
+
+        // 8. YENİ KARGO HAREKETİ EKLEME SAYFASI (GET)
+        [HttpGet]
+        public IActionResult AddHistory(int id)
+        {
+            // Ekrana boş bir DTO gönderiyoruz ama HANGİ kargoya ait olduğunu bilsin diye ID'yi içine gizlice koyuyoruz
+            var dto = new ShipmentHistoryCreateDto { ShipmentId = id };
+            return View(dto);
+        }
+
+        // 9. YENİ KARGO HAREKETİ EKLEME İŞLEMİ (POST)
+        [HttpPost]
+        public async Task<IActionResult> AddHistory(ShipmentHistoryCreateDto dto)
+        {
+            if (!ModelState.IsValid) return View(dto); // ! uygun değilse
+
+            // DTO'yu API'ye göndermek üzere JSON metnine çevir (Serialize)
+            var jsonString = JsonConvert.SerializeObject(dto);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+
+            // API'deki ShipmentHistories ucuna POST isteği atıyoruz
+            var response = await _httpClient.PostAsync("https://localhost:7204/api/ShipmentHistories", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Başarılı olursa, bizi yeni eklenen hareketleri görmemiz için o kargonun Detay sayfasına geri fırlat!
+                return RedirectToAction("Detail", new { id = dto.ShipmentId });
+            }
+
+            ModelState.AddModelError("", "Hareket eklenirken bir hata oluştu.");
+            return View(dto);
         }
     }
 }

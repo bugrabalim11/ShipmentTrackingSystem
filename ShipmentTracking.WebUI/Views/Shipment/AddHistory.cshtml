@@ -1,0 +1,43 @@
+﻿@model ShipmentTracking.Entities.DTOs.ShipmentHistory.ShipmentHistoryCreateDto
+
+@{
+    ViewData["Title"] = "Yeni Hareket Ekle";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">📍 Yeni Kargo Hareketi Ekle</h4>
+                </div>
+                <div class="card-body p-4">
+                    
+                    <form asp-action="AddHistory" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <input type="hidden" asp-for="ShipmentId" />
+
+                        <div class="mb-3">
+                            <label asp-for="Location" class="form-label fw-bold">Şu Anki Konum (Şube/Şehir)</label>
+                            <input asp-for="Location" class="form-control" placeholder="Örn: Bilecik Merkez Şube" required />
+                            <span asp-validation-for="Location" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="StatusDescription" class="form-label fw-bold">Durum / Açıklama</label>
+                            <input asp-for="StatusDescription" class="form-control" placeholder="Örn: Dağıtıma Çıktı" required />
+                            <span asp-validation-for="StatusDescription" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="/Shipment/Detail/@Model.ShipmentId" class="btn btn-outline-secondary">Vazgeç</a>
+                            <button type="submit" class="btn btn-success shadow-sm">Hareketi Kaydet</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
