@@ -1,0 +1,77 @@
+﻿@model ShipmentTracking.WebUI.Models.ShipmentDetailViewModel
+
+@{
+    ViewData["Title"] = "Kargo Detay ve Geçmişi";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold">📋 Kargo Detay Raporu</h2>
+        <a href="/Shipment/Index" class="btn btn-outline-secondary">← Listeye Dön</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow border-0 h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">📦 Genel Bilgiler</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Kimlik (ID):</strong> @Model.Shipment.Id</p>
+                    <p><strong>Takip Numarası:</strong> <span class="badge bg-secondary">@Model.Shipment.TrackingNumber</span></p>
+                    <p><strong>Gönderici:</strong> @Model.Shipment.SenderName</p>
+                    <p><strong>Alıcı:</strong> @Model.Shipment.ReceiverName</p>
+                    <p>
+                        <strong>Mevcut Durum:</strong>
+                        <span class="badge @(Model.Shipment.Status == "Hazırlanıyor" ? "bg-warning text-dark" : "bg-success")">
+                            @Model.Shipment.Status
+                        </span>
+                    </p>
+                    <p><strong>Kayıt Tarihi:</strong> @Model.Shipment.CreatedDate.ToString("dd.MM.yyyy HH:mm")</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8 mb-4">
+            <div class="card shadow border-0 h-100">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">📍 Kargo Yolculuk Geçmişi (Zaman Çizelgesi)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tarih</th>
+                                <th>Bulunduğu Konum / Şehir</th>
+                                <th>Açıklama / Durum</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Histories != null && Model.Histories.Any())
+                            {
+                                foreach (var history in Model.Histories)
+                                {
+                                    <tr>
+                                        <td class="text-muted">@history.ChangeDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                        <td><strong>@history.Location</strong></td>
+                                        <td>
+                                            <span class="text-primary fw-bold">@history.StatusDescription</span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted py-4">
+                                        Bu kargoya ait henüz hiçbir hareket geçmişi girilmemiş.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

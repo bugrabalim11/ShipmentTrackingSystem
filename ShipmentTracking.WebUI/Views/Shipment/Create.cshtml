@@ -1,0 +1,48 @@
+﻿@model ShipmentTracking.Entities.DTOs.Shipment.ShipmentCreateDto
+
+@{
+    ViewData["Title"] = "Yeni Kargo Ekle";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">📦 Yeni Kargo Ekle</h4>
+                </div>
+                <div class="card-body p-4">
+                    
+                    <form asp-action="Create" method="post">
+                        
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="TrackingNumber" class="form-label fw-bold">Takip Numarası</label>
+                            <input asp-for="TrackingNumber" class="form-control" placeholder="Örn: TR-123456" required />
+                            <span asp-validation-for="TrackingNumber" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="SenderName" class="form-label fw-bold">Gönderici Adı</label>
+                            <input asp-for="SenderName" class="form-control" placeholder="Gönderen kişinin adını girin..." required />
+                            <span asp-validation-for="SenderName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ReceiverName" class="form-label fw-bold">Alıcı Adı</label>
+                            <input asp-for="ReceiverName" class="form-control" placeholder="Alacak kişinin adını girin..." required />
+                            <span asp-validation-for="ReceiverName" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="/Shipment/Index" class="btn btn-outline-secondary">Vazgeç ve Listeye Dön</a>
+                            <button type="submit" class="btn btn-success shadow-sm">Kargoyu Kaydet</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

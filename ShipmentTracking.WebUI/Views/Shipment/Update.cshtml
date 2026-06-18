@@ -1,0 +1,52 @@
+﻿@model ShipmentTracking.Entities.DTOs.Shipment.ShipmentUpdateDto
+
+@{
+    ViewData["Title"] = "Kargo Güncelle";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">✏️ Kargo Bilgilerini Güncelle</h4>
+                </div>
+                <div class="card-body p-4">
+                    
+                    <form asp-action="Update" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="Status" />
+                        @* Artık kullanıcı durumu ekranda görmeyecek ve değiştiremeyecek, ama "Kaydet" butonuna
+                        bastığında eski durum (örneğin "Hazırlanıyor") gizlice formun içinde API'ye geri gidecek ve kaybolmayacak! *@
+
+                        <div class="mb-3">
+                            <label asp-for="TrackingNumber" class="form-label fw-bold">Takip Numarası</label>
+                            <input asp-for="TrackingNumber" class="form-control" required />
+                            <span asp-validation-for="TrackingNumber" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="SenderName" class="form-label fw-bold">Gönderici Adı</label>
+                            <input asp-for="SenderName" class="form-control" required />
+                            <span asp-validation-for="SenderName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ReceiverName" class="form-label fw-bold">Alıcı Adı</label>
+                            <input asp-for="ReceiverName" class="form-control" required />
+                            <span asp-validation-for="ReceiverName" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="/Shipment/Index" class="btn btn-outline-secondary">Vazgeç</a>
+                            <button type="submit" class="btn btn-warning shadow-sm">Değişiklikleri Kaydet</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
