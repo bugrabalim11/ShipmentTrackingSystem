@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ShipmentTracking.Entities.Concrete;
+using ShipmentTracking.Entities.DTOs.Auth;
 using ShipmentTracking.Entities.DTOs.Shipment;
 using ShipmentTracking.Entities.DTOs.ShipmentHistory;
 using System;
@@ -28,6 +29,9 @@ namespace ShipmentTracking.Business.Profiles
             CreateMap<ShipmentHistory, ShipmentHistoryListDto>();
             CreateMap<ShipmentHistoryCreateDto, ShipmentHistory>();
             CreateMap<ShipmentHistoryUpdateDto, ShipmentHistory>();
+
+            // AutoMapper'a Bu İki Sınıfı Tanıştır
+            CreateMap<AppUser, UserResponseDto>();
         }
     }
 }

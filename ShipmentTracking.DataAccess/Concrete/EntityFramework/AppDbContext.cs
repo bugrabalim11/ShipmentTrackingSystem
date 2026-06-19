@@ -15,5 +15,22 @@ namespace ShipmentTracking.DataAccess.Concrete.EntityFramework
         }
         public DbSet<Shipment> Shipments { get; set; }
         public DbSet<ShipmentHistory> ShipmentHistories { get; set; }
+        public DbSet<AppUser> AppUsers { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Veritabanı güncellendiğinde içine varsayılan bir yönetici ekliyoruz
+            modelBuilder.Entity<AppUser>().HasData(
+                new AppUser
+                {
+                    Id = 1,
+                    FirstName = "Sistem",
+                    LastName = "Yöneticisi",
+                    UserName = "admin",
+                    Password = "123", 
+                    Role = "Admin"
+                }
+            );
+        }
     }
 }
