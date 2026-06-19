@@ -46,5 +46,41 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: '@TempData["Success"]',
+            showConfirmButton: false,
+            timer: 3000, // 3 saniye sonra kaybolur
+            timerProgressBar: true
+            });
+            });
+        </script>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: '@TempData["Error"]',
+            showConfirmButton: false,
+            timer: 4000,
+            timerProgressBar: true
+            });
+            });
+        </script>
+    }
 </body>
 </html>

@@ -27,7 +27,6 @@ namespace ShipmentTracking.WebUI.Controllers
                 return View(null);
             }
 
-            // !!! Kendi API Port numaranı yazmayı unutma !!!
             var response = await _httpClient.GetAsync("https://localhost:7204/api/Shipments");
 
             if (response.IsSuccessStatusCode)

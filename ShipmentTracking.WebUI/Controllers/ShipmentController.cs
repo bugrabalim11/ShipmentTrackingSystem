@@ -66,6 +66,7 @@ namespace ShipmentTracking.WebUI.Controllers
             // Eğer API bize "201 Created" veya "200 OK" gibi başarılı bir yanıt dönerse...
             if (response.IsSuccessStatusCode)
             {
+                TempData["Success"] = "Yeni kargo sisteme başarıyla eklendi.";
                 return RedirectToAction("Index"); // Kullanıcıyı tekrar listeye yönlendir
             }
 
@@ -122,6 +123,7 @@ namespace ShipmentTracking.WebUI.Controllers
             // API'ye doğrudan silme komutu gönderiyoruz
             await _httpClient.DeleteAsync($"https://localhost:7204/api/Shipments/{id}");
 
+            TempData["Success"] = "Kargo başarıyla silindi!";
             return RedirectToAction("Index"); // Sildikten sonra sayfayı yenilek
         }
 
@@ -185,6 +187,7 @@ namespace ShipmentTracking.WebUI.Controllers
             if (response.IsSuccessStatusCode)
             {
                 // Başarılı olursa, bizi yeni eklenen hareketleri görmemiz için o kargonun Detay sayfasına geri fırlat!
+                TempData["Success"] = "Kargo hareketi başarıyla güncellendi.";
                 return RedirectToAction("Detail", new { id = dto.ShipmentId });
             }
 
