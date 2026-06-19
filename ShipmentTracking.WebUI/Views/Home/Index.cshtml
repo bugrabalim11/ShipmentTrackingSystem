@@ -1,8 +1,93 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model ShipmentTracking.WebUI.Models.ShipmentDetailViewModel
+
+@{
+    ViewData["Title"] = "Ana Sayfa - Kargo Sorgula";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-5">
+    <div class="row justify-content-center text-center">
+        <div class="col-md-8">
+            <h1 class="display-5 text-primary fw-bold mb-3">📦 Kargom Nerede?</h1>
+            <p class="lead text-muted mb-4">Gönderinizin güncel durumunu öğrenmek için takip numaranızı giriniz.</p>
+            
+            <form asp-action="Index" method="get" class="d-flex shadow-sm">
+                <input type="text" name="trackingNumber" class="form-control form-control-lg me-2" placeholder="Örn: TR-123456" required />
+                <button type="submit" class="btn btn-primary btn-lg px-4">Sorgula</button>
+            </form>
+
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert alert-danger mt-4 shadow-sm" role="alert">
+                    ⚠️ @ViewBag.ErrorMessage
+                </div>
+            }
+        </div>
+    </div>
+
+    @if (Model != null)
+    {
+        <hr class="my-5" />
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">📦 Kargo Durumu</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Takip Numarası:</strong> <span class="badge bg-secondary">@Model.Shipment.TrackingNumber</span></p>
+                        <p><strong>Gönderici:</strong> @Model.Shipment.SenderName</p>
+                        <p><strong>Alıcı:</strong> @Model.Shipment.ReceiverName</p>
+                        <hr />
+                        <h5 class="text-center">
+                            Mevcut Durum: <br />
+                            <span class="badge mt-2 @(Model.Shipment.Status == "Hazırlanıyor" ? "bg-warning text-dark" : "bg-success")">
+                                @Model.Shipment.Status
+                            </span>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8 mb-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">📍 Yolculuk Geçmişi</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Konum</th>
+                                    <th>Açıklama</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Histories != null && Model.Histories.Any())
+                                {
+                                    foreach (var history in Model.Histories)
+                                    {
+                                        <tr>
+                                            <td class="text-muted">@history.ChangeDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                            <td><strong>@history.Location</strong></td>
+                                            <td><span class="text-primary fw-bold">@history.StatusDescription</span></td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-4">
+                                            Kargonuz şu an sistemimize kaydedildi, kısa süre içinde hareketleri listelenecektir.
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>
