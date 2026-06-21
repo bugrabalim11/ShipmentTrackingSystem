@@ -1,0 +1,75 @@
+﻿@model ShipmentTracking.WebUI.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Yeni Personel Ekle";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-dark text-white text-center py-3">
+                    <h4 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i>Yeni Personel Kaydı</h4>
+                </div>
+                
+                <div class="card-body p-4">
+                    
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.ErrorMessage
+                        </div>
+                    }
+
+                    <form asp-controller="Auth" asp-action="Register" method="post">
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FirstName" class="form-label fw-bold">Ad</label>
+                                <input asp-for="FirstName" class="form-control" placeholder="Örn: Ali" />
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LastName" class="form-label fw-bold">Soyad</label>
+                                <input asp-for="LastName" class="form-control" placeholder="Örn: Yılmaz" />
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="UserName" class="form-label fw-bold">Kullanıcı Adı</label>
+                            <input asp-for="UserName" class="form-control" placeholder="Sisteme giriş yaparken kullanacağı ad" />
+                            <span asp-validation-for="UserName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label fw-bold">Geçici Şifre</label>
+                            <input asp-for="Password" class="form-control" placeholder="Personele verilecek ilk şifre" />
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Role" class="form-label fw-bold">Yetki Rolü</label>
+                            <select asp-for="Role" class="form-select">
+                                <option value="Personel">Şube Personeli</option>
+                                <option value="Admin">Sistem Yöneticisi (Admin)</option>
+                            </select>
+                            <span asp-validation-for="Role" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-save me-2"></i> Sisteme Kaydet
+                            </button>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>

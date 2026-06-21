@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ShipmentTracking.Entities.DTOs.Auth;
@@ -90,6 +91,45 @@ namespace ShipmentTracking.WebUI.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             // Çıkış yaptıktan sonra giriş sayfasına yönlendiriyoruz
             return RedirectToAction("Login", "Auth");
+        }
+
+        // 4. YENİ PERSONEL KAYIT SAYFASINI GÖSTER (GET)
+        [HttpGet]
+        [Authorize(Roles = "Admin")] // Sadece Admin personel ekleyebilir
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
+        {
+            // 1. Kutu kurallara uygun mu? (Boş alan var mı?)
+            if (!ModelState.IsValid)
+            {
+                return View(registerViewModel);
+            }
+
+            // 2. C# Kutusunu (ViewModel) evrensel JSON diline çeviriyoruz
+            var jsonContent = new StringContent(JsonConvert.SerializeObject(registerViewModel), Encoding.UTF8, "application/json");
+
+            // 3. API'nin Register kapısını çalıyoruz (Kendi API port numaranı kontrol etmeyi unutma!)
+            var response = await _httpClient.PostAsync("https://localhost:7204/api/Auth/register", jsonContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // 4. Kayıt başarılıysa, ekranda yeşil bir mesaj gösterip Kargo Paneline yönlendir
+                TempData["Success"] = "Yeni personel başarıyla kaydedildi!";
+                return RedirectToAction("Index", "Shipment");
+            }
+            else
+            {
+                // 5. API'den hata dönerse (örn: "Bu kullanıcı adı zaten var"), hatayı yakala ve ekranda göster                ViewBag.ErrorMessage = "Kayıt işlemi sırasında bir hata oluştu!";
+                var errorResponse = await response.Content.ReadAsStringAsync();
+                ViewBag.ErrorMessage = "işlem sırasında bir hata oluştu";
+                return View(registerViewModel);
+            }
         }
     }
 }

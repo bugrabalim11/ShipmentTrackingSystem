@@ -24,16 +24,31 @@
         
                     @if (User.Identity != null && User.Identity.IsAuthenticated)
                     {
+                        <!-- 1. Herkesin Gördüğü Kargo Yönetimi -->
                         <li class="nav-item me-3">
                             <a class="nav-link text-primary fw-bold" asp-controller="Shipment" asp-action="Index">
                                 📦 Kargoları Yönet
                             </a>
                         </li>
+
+                        <!-- 2. İŞTE BİZİM VIP KAPI (SADECE ADMİN) -->
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item me-3">
+                                <a class="btn btn-outline-success btn-sm fw-bold" asp-controller="Auth" asp-action="Register">
+                                    Personel Ekle
+                                </a>
+                            </li>
+                        }
+
+                        <!-- 3. Kullanıcı Adı Gösterimi -->
                         <li class="nav-item me-3">
                             <span class="text-muted">
                                 Hoş geldin, <strong>@User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value</strong>
                             </span>
                         </li>
+
+                        <!-- 4. Çıkış Butonu -->
                         <li class="nav-item">
                             <a class="btn btn-outline-danger btn-sm" asp-controller="Auth" asp-action="Logout">
                                 Çıkış Yap
@@ -42,6 +57,7 @@
                     }
                     else
                     {
+                        <!-- Giriş Yapmamış Kişiler -->
                         <li class="nav-item">
                             <a class="btn btn-outline-secondary btn-sm" asp-controller="Auth" asp-action="Login">
                                 Personel Girişi
