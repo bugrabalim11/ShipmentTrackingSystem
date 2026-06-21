@@ -17,6 +17,10 @@ namespace ShipmentTracking.API.Extensions
             services.AddScoped<IShipmentHistoryRepository, ShipmentHistoryRepository>();
             services.AddScoped<IShipmentHistoryService, ShipmentHistoryManager>();
 
+            // --- EKSİK OLAN PARÇALAR (BUNLARI EKLE) ---
+            services.AddScoped<IAppUserRepository, AppUserRepository>();
+            services.AddScoped<IAppUserService, AppUserManager>();
+
             return services;
         }
     }

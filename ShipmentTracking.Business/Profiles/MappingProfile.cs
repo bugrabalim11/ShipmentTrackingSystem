@@ -32,6 +32,8 @@ namespace ShipmentTracking.Business.Profiles
 
             // AutoMapper'a Bu İki Sınıfı Tanıştır
             CreateMap<AppUser, UserResponseDto>();
+
+            CreateMap<RegisterDto, AppUser>();
         }
     }
 }
