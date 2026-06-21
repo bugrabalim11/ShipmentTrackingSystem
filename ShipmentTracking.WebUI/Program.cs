@@ -1,11 +1,19 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
 
 // Sisteme MVC yeteneklerini ekler
 builder.Services.AddControllersWithViews();
+
+// Çerez (Cookie) makinesini sisteme tanıtıyoruz
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = "ShipmentTrackingCookie"; // Çerezin adı
+        options.LoginPath = "/Auth/Login";              // Giriş yapmamış adamı buraya fırlat
+        options.AccessDeniedPath = "/Auth/Login";       // Yetkisi olmayan adamı da buraya fırlat
+        options.ExpireTimeSpan = TimeSpan.FromHours(2); // 2 saat sonra otomatik çıkış yap
+    });
 
 // ---> EKLENECEK SİHİRLİ SATIR <---
 // Sisteme HttpClient (Sanal Tarayıcı) yeteneğini öğretir
@@ -25,7 +33,8 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-app.UseAuthorization();
+app.UseAuthentication(); // 1. Sen kimsin? (Kimlik kontrolü)
+app.UseAuthorization();  // 2. Girmeye yetkin var mı? (Yetki kontrolü)
 
 app.MapStaticAssets();
 

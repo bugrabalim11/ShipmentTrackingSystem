@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ShipmentTracking.Entities.Concrete;
 using ShipmentTracking.Entities.DTOs.Shipment;
@@ -9,6 +10,7 @@ using System.Text.Json.Serialization;
 
 namespace ShipmentTracking.WebUI.Controllers
 {
+    [Authorize]
     public class ShipmentController : Controller
     {
         // API ile konuşmamızı sağlayacak sanal tarayıcı nesnemiz

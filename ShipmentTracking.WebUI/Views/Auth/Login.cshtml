@@ -1,0 +1,50 @@
+﻿@model ShipmentTracking.WebUI.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Giriş Yap";
+    // Eğer login sayfasında üst menünün (navbar) görünmesini istemiyorsan Layout = null; yapabilirsin.
+    // Şimdilik sistemin genel yapısını bozmamak için varsayılanı kullanıyoruz.
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+        <div class="card shadow-lg border-0 rounded-lg mt-5">
+            <div class="card-header bg-primary text-white text-center">
+                <h3 class="font-weight-light my-2">Sisteme Giriş</h3>
+            </div>
+            <div class="card-body">
+                
+                @if (ViewBag.ErrorMessage != null)
+                {
+                    <div class="alert alert-danger text-center">
+                        @ViewBag.ErrorMessage
+                    </div>
+                }
+
+                <form asp-controller="Auth" asp-action="Login" method="post">
+                    
+                    <div class="form-floating mb-3">
+                        <input asp-for="UserName" class="form-control" placeholder="Kullanıcı adınızı girin" />
+                        <label asp-for="UserName">Kullanıcı Adı</label>
+                        <span asp-validation-for="UserName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Password" class="form-control" type="password" placeholder="Şifrenizi girin" />
+                        <label asp-for="Password">Şifre</label>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                        <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
