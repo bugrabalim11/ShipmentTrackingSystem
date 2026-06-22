@@ -7,9 +7,17 @@ using ShipmentTracking.Entities.DTOs.Auth;
 using ShipmentTracking.WebUI.Models;
 using System.Security.Claims;
 using System.Text;
+using System.Net.Http.Headers; // JWT Bileti için eklendi
 
 namespace ShipmentTracking.WebUI.Controllers
 {
+    // YARDIMCI SINIF: API'den dönen Token ve User verisini tip güvenli (Type-Safe) almak için oluşturduk.
+    // Bu sayede dynamic'ten kaynaklanan "null" ve büyük/küçük harf hatalarından kurtuluyoruz!
+    public class LoginResponseWrapper
+    {
+        public string Token { get; set; } = string.Empty;
+        public UserResponseViewModel? User { get; set; }
+    }
     public class AuthController : Controller
     {
         private readonly HttpClient _httpClient;
@@ -44,34 +52,38 @@ namespace ShipmentTracking.WebUI.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                // Eğer şifre doğruysa API'den gelen veriyi okuyoruz
                 var responseData = await response.Content.ReadAsStringAsync();
-                var user = JsonConvert.DeserializeObject<UserResponseViewModel>(responseData);
 
-                // CS8602 UYARISININ ÇÖZÜMÜ: Eğer nesne boş geldiyse işlemi durdur
-                if (user == null)
+                // 1. API'DEN GELEN YAPIYI GÜVENLİ WRAPPER SINIFIMIZ İLE KARŞILIYORUZ
+                // Newtonsoft.Json, "User" veya "user" fark etmeksizin otomatik eşleştirme yapacaktır.
+                var result = JsonConvert.DeserializeObject<LoginResponseWrapper>(responseData);
+
+                // 2. TOKEN VE USER BİLGİLERİNİN BOŞ OLUP OLMADIĞINI KONTROL EDİYORUZ
+                if (result == null || result.User == null || string.IsNullOrEmpty(result.Token))
                 {
-                    ViewBag.ErrorMessage = "Suncudan kullanıcı bilgileri alınamadı!";
+                    ViewBag.ErrorMessage = "Sunucudan kullanıcı bilgileri veya güvenlik bileti alınamadı!";
                     return View(model);
                 }
 
-                // Artık user'ın boş olmadığından %100 eminiz, uyarı kaybolur.
-                // --- SİHİRLİ KISIM: ÇEREZ (COOKIE) BASMA ---
-                // Kullanıcının cüzdanını (Claims) oluşturuyoruz
+                string token = result.Token;
+                var user = result.User;
+
+                // 3. KULLANICI KİMLİĞİNİ (CLAIMS) OLUŞTURUYORUZ
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.NameIdentifier, user!.Id.ToString()),
                     new Claim(ClaimTypes.Name, user.UserName),
                     new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}"),
-                    new Claim(ClaimTypes.Role, user.Role)
+                    new Claim(ClaimTypes.Role, user.Role),
+                    // İŞTE SİHİR BURADA! JWT BİLETİNİ DE MVC'NİN ÇEREZİNE (CLAIM OLARAK) SAKLIYORUZ!
+                    new Claim("jwt_token", token)
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                // Tarayıcıya dijital damgayı basıyoruz (Artık içeridesin!)
+                // 4. TARAYICIYA ÇEREZİ BASIYORUZ (İÇİNDE GİZLİ JWT BİLETİ İLE BİRLİKTE)
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-                // Giriş başarılı olunca Kargolar listesine yönlendiriyoruz
                 TempData["Success"] = $"Hoş geldin, {user.FirstName}!";
                 return RedirectToAction("Index", "Shipment");
             }
@@ -111,6 +123,17 @@ namespace ShipmentTracking.WebUI.Controllers
                 return View(registerViewModel);
             }
 
+            // --- YENİ EKLENEN KISIM: CEBİMİZDEKİ BİLETİ ÇIKARIYORUZ ---
+            // MVC'nin çerezine sakladığımız "jwt_token" isimli bileti buluyoruz
+            var token = User.Claims.FirstOrDefault(c => c.Type == "jwt_token")?.Value;
+
+            // Eğer bilet varsa, bunu postacıya (HttpClient) veriyoruz. (Buna Bearer Token denir)
+            if (!string.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+            // ---------------------------------------------------------
+
             // 2. C# Kutusunu (ViewModel) evrensel JSON diline çeviriyoruz
             var jsonContent = new StringContent(JsonConvert.SerializeObject(registerViewModel), Encoding.UTF8, "application/json");
 
@@ -125,9 +148,9 @@ namespace ShipmentTracking.WebUI.Controllers
             }
             else
             {
-                // 5. API'den hata dönerse (örn: "Bu kullanıcı adı zaten var"), hatayı yakala ve ekranda göster                ViewBag.ErrorMessage = "Kayıt işlemi sırasında bir hata oluştu!";
+                // 5. API'den hata dönerse (örn: "Bu kullanıcı adı zaten var"), hatayı yakala ve ekranda göster                
                 var errorResponse = await response.Content.ReadAsStringAsync();
-                ViewBag.ErrorMessage = "işlem sırasında bir hata oluştu";
+                ViewBag.ErrorMessage = "Kayıt işlemi sırasında bir hata oluştu!";
                 return View(registerViewModel);
             }
         }

@@ -1,17 +1,39 @@
+using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using ShipmentTracking.API.Extensions;
 using ShipmentTracking.Business.Abstract;
 using ShipmentTracking.Business.Concrete;
+using ShipmentTracking.Business.ValidationRules;
 using ShipmentTracking.DataAccess.Abstract;
 using ShipmentTracking.DataAccess.Concrete.EntityFramework;
-using ShipmentTracking.Business.ValidationRules;
-using FluentValidation; // DTO kurallarımızın olduğu klasör!
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // API ve Swagger servisleri
 builder.Services.AddControllers();
+
+// --- JWT GÜVENLİK SİSTEMİ KURULUMU ---
+// DÜZELTME: "Authentication" yerine "AddAuthentication" olmalıydı!
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true, // Bileti ben mi ürettim kontrol et
+            ValidateAudience = true, // Bileti kime ürettim kontrol et
+            ValidateLifetime = true, // Biletin süresi geçmiş mi (Örn: 1 saat) kontrol et
+            ValidateIssuerSigningKey = true, // Biletin imzası benim gizli anahtarımla mı atılmış kontrol et!
+
+            // appsettings.json'daki ayarları okuyoruz
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        };
+    });
 
 // 1. API'ye Gelen İstekleri (JSON verilerini) Otomatik Kontrol Etme Özelliği
 builder.Services.AddFluentValidationAutoValidation();
@@ -44,7 +66,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// --- SİHİRLİ SIRALAMA BURADA ---
+// ÖNCE kapıdaki görevli bileti kontrol eder (Authentication)
+// SONRA içeri giren kişinin rolüne bakar (Authorization)
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
