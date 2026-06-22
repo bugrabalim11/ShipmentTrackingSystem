@@ -1,9 +1,23 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using ShipmentTracking.WebUI.ValidationRules;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Sisteme MVC yeteneklerini ekler
-builder.Services.AddControllersWithViews();
+// .NET'in varsayılan İngilizce 'Zorunlu Alan' (Implicit Required) hatalarını susturuyoruz.
+// Kontrolü tamamen kendi yazdığımız FluentValidation sınıflarına bırakıyoruz!
+builder.Services.AddControllersWithViews(options =>
+{
+    options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+});
+
+// 2. FluentValidation'ın Otomatik Kontrol (Server-side) ve Tarayıcı (Client-side) yeteneklerini ekliyoruz
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+
+// 3. Projedeki Güvenlik Görevlilerini (Validator'ları) bulup sisteme tanıtıyoruz
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterViewModelValidator>();
 
 // Çerez (Cookie) makinesini sisteme tanıtıyoruz
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

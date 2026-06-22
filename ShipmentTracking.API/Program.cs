@@ -1,14 +1,23 @@
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using ShipmentTracking.API.Extensions;
 using ShipmentTracking.Business.Abstract;
 using ShipmentTracking.Business.Concrete;
 using ShipmentTracking.DataAccess.Abstract;
 using ShipmentTracking.DataAccess.Concrete.EntityFramework;
+using ShipmentTracking.Business.ValidationRules;
+using FluentValidation; // DTO kurallarımızın olduğu klasör!
 
 var builder = WebApplication.CreateBuilder(args);
 
 // API ve Swagger servisleri
 builder.Services.AddControllers();
+
+// 1. API'ye Gelen İstekleri (JSON verilerini) Otomatik Kontrol Etme Özelliği
+builder.Services.AddFluentValidationAutoValidation();
+
+// 2. Sistemi Business katmanındaki kurallarla tanıştırıyoruz
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterDtoValidator>();
 
 // AutoMapper'ı sisteme dahil ediyoruz ve sözlüğümüzün yerini gösteriyoruz
 builder.Services.AddAutoMapper(cfg => { }, typeof(ShipmentTracking.Business.Profiles.MappingProfile).Assembly);
