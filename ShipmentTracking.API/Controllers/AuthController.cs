@@ -28,10 +28,18 @@ namespace ShipmentTracking.API.Controllers
             // 1. Generic servisimizden tüm kullanıcıları çekiyoruz
             var users = await _appUserService.GetAllAsync();
 
-            // 2. Gelen kullanıcı adı ve şifreyi bu listede arıyoruz
-            var user = users.FirstOrDefault(x => x.UserName == loginDto.UserName && x.Password == loginDto.Password);
+            // 1. Önce sadece Kullanıcı Adına göre kişiyi buluyoruz (Şifreyi sormuyoruz daha!)
+            var user = users.FirstOrDefault(x => x.UserName == loginDto.UserName);
 
             if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            // 2. Kripto Doğrulaması: Kullanıcının girdiği "123" ile veritabanındaki karmaşık metni karşılaştırıyoruz
+            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password);
+
+            if (!isPasswordValid)
             {
                 return Unauthorized();
             }
@@ -55,6 +63,10 @@ namespace ShipmentTracking.API.Controllers
 
             // 2. Sihir: DTO'yu AppUser nesnesine dönüştür
             var newUser = _mapper.Map<AppUser>(registerDto);
+
+            // İŞTE SİBER GÜVENLİK BURADA BAŞLIYOR!
+            // Kullanıcının "123" olarak girdiği şifreyi alıp geri döndürülemez bir kriptoya çeviriyoruz.
+            newUser.Password = BCrypt.Net.BCrypt.HashPassword(registerDto.Password);
 
             // 3. Veritabanına DEĞİL, Business (İş) katmanına gönderiyoruz!
             await _appUserService.AddAsync(newUser);
