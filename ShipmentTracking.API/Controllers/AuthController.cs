@@ -113,5 +113,48 @@ namespace ShipmentTracking.API.Controllers
 
             return Ok();
         }
+
+        // 1. TÜM PERSONELLERİ LİSTELEME METODU (Sadece Admin görebilir)
+        [HttpGet("GetAllPersonnel")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllPersonnel()
+        {
+            var users = await _appUserService.GetAllAsync();
+
+            // Güvenlik gereği şifreleri (hashleri) dışarı yollamıyoruz, AutoMapper ile temiz DTO'ya çeviriyoruz
+            var usersDto = _mapper.Map<List<UserResponseDto>>(users);
+
+            return Ok(usersDto);
+        }
+
+        // 2. PERSONEL SİLME METODU (Sadece Admin silebilir)
+        [HttpDelete("DeletePersonnel/{id}")] // DÜZELTİLDİ: Aradaki boşluk silindi
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeletePersonnel(int id)
+        {
+            var user = await _appUserService.GetByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound("Silinecek personel bulunamadı.");
+            }
+
+            // DÜZELTİLDİ: Büyük/küçük harf ve boşluk hatalarına karşı zırh ekledik!
+            if (user.Role != null && user.Role.Trim().ToLower() == "admin")
+            {
+                return BadRequest("Sistemdeki bir Admin hesabı silinemez!");
+            }
+
+            try
+            {
+                _appUserService.Delete(user);
+                return Ok("Personel başarıyla sistemden silindi.");
+            }
+            catch (Exception ex)
+            {
+                // İlişkili veri (kargo) varsa EF çöker, burada yakalayıp düzgün mesaj döneriz
+                string gercekHata = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return StatusCode(500, $"SİSTEM HATASI: {gercekHata}");
+            }
+        }
     }
 }

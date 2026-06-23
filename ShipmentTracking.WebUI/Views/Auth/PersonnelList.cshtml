@@ -1,0 +1,84 @@
+﻿@model List<ShipmentTracking.WebUI.Models.UserResponseViewModel>
+@{
+    ViewData["Title"] = "Personel Yönetimi";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary"><i class="bi bi-people-fill me-2"></i> Personel Yönetimi</h2>
+        <a asp-action="Register" asp-controller="Auth" class="btn btn-success shadow-sm">
+            <i class="bi bi-person-plus-fill me-1"></i> Yeni Personel Ekle
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0 text-center align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#ID</th>
+                            <th>Kullanıcı Adı</th>
+                            <th>Ad Soyad</th>
+                            <th>Rol</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var user in Model)
+                            {
+                                <tr>
+                                    <td><span class="badge bg-secondary">@user.Id</span></td>
+                                    <td class="fw-bold">@user.UserName</td>
+                                    <td>@user.FirstName @user.LastName</td>
+                                    <td>
+                                        @if (user.Role == "Admin")
+                                        {
+                                            <span class="badge bg-danger rounded-pill px-3 py-2"><i class="bi bi-shield-lock-fill"></i> Admin</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-info text-dark rounded-pill px-3 py-2"><i class="bi bi-person-badge"></i> Personel</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <!-- Silme İşlemi İçin Form -->
+                                        <form asp-action="DeletePersonnel" asp-controller="Auth" asp-route-id="@user.Id" method="post" class="d-inline" onsubmit="return confirm('@user.FirstName adlı personeli silmek istediğinize emin misiniz? Bu işlem geri alınamaz!');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash-fill"></i> Sil
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">Sistemde kayıtlı personel bulunamadı.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

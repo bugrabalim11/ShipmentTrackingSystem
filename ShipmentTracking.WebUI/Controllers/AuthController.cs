@@ -177,5 +177,71 @@ namespace ShipmentTracking.WebUI.Controllers
                 return View(registerViewModel);
             }
         }
+
+        // =========================================================================
+        // [ÖĞRETMEN NOTU - PERSONEL YÖNETİMİ]
+        // =========================================================================
+
+        // BÜTÜN PERSONELLERİ LİSTELEYEN SAYFA (GET)
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> PersonnelList()
+        {
+            // 1. BİLETİ ÇIKAR: MVC cüzdanından (Cookie) JWT biletini alıyoruz.
+            var token = User.Claims.FirstOrDefault(c => c.Type == "jwt_token")?.Value;
+            if (!string.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+
+            // 2. KASAYA GİT: API'nin GetAllPersonnel kapısını çalıyoruz.
+            var response = await _httpClient.GetAsync("https://localhost:7204/api/Auth/GetAllPersonnel");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseData = await response.Content.ReadAsStringAsync();
+
+                // Gelen JSON verisini C# listesine çevirip Vitrin'e (View) yolluyoruz.
+                var personnelList = JsonConvert.DeserializeObject<List<UserResponseViewModel>>(responseData);
+                return View(personnelList);
+            }
+
+            ViewBag.ErrorMessage = "Personel listesi yüklenirken bir hata oluştu!";
+            return View(new List<UserResponseViewModel>());
+        }
+
+        // PERSONEL SİLME İŞLEMİ (POST)
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeletePersonnel(int id)
+        {
+            // 1. BİLETİ ÇIKAR
+            var token = User.Claims.FirstOrDefault(c => c.Type == "jwt_token")?.Value;
+            if (!string.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+
+            // 2. KASAYA GİT: API'nin silme kapısına personelin ID'sini (Örn: /5) gönderiyoruz.
+            var response = await _httpClient.DeleteAsync($"https://localhost:7204/api/Auth/DeletePersonnel/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Success"] = "Personel başarıyla silindi!";
+            }
+            // SADECE 400 (BadRequest) dönerse bizim API'de yazdığımız mesajdır ("Admin silinemez" gibi)
+            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                TempData["Error"] = await response.Content.ReadAsStringAsync();
+            }
+            // EĞER 500 GİBİ BİR SUNUCU ÇÖKMESİ VARSA (İlişkili veriler silinemez vb.)
+            else
+            {
+                TempData["Error"] = "İşlem başarısız! Bu personele ait kayıtlı kargolar olabilir.";
+            }
+
+            // İşlem bitince sayfayı yenilemek için aynı sayfaya yönlendiriyoruz.
+            return RedirectToAction("PersonnelList");
+        }
     }
 }

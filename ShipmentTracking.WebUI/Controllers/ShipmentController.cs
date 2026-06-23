@@ -11,6 +11,7 @@ using System.Text.Json.Serialization;
 namespace ShipmentTracking.WebUI.Controllers
 {
     [Authorize]
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)] // GERİ TUŞU HAYALETİNİ ÖLDÜREN KOD
     public class ShipmentController : Controller
     {
         // API ile konuşmamızı sağlayacak sanal tarayıcı nesnemiz

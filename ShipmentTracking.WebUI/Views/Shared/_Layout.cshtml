@@ -34,6 +34,11 @@
                         <!-- 2. İŞTE BİZİM VIP KAPI (SADECE ADMİN) -->
                         @if (User.IsInRole("Admin"))
                         {
+                            <li class="nav-item me-2">
+                                <a class="btn btn-outline-info btn-sm fw-bold" asp-controller="Auth" asp-action="PersonnelList">
+                                    <i class="bi bi-people-fill"></i> Personel Yönetimi
+                                </a>
+                            </li>
                             <li class="nav-item me-3">
                                 <a class="btn btn-outline-success btn-sm fw-bold" asp-controller="Auth" asp-action="Register">
                                     Personel Ekle
@@ -77,7 +82,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2026 - ShipmentTracking.WebUI - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2026 - KargoTakip.AŞ - <a asp-area="" asp-controller="Home" asp-action="Privacy">Gizlilik Sözleşmesi</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
