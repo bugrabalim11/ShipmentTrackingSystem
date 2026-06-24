@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShipmentTracking.Business.Abstract;
 using ShipmentTracking.Entities.Concrete;
@@ -8,6 +9,7 @@ namespace ShipmentTracking.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ShipmentHistoriesController : ControllerBase
     {
         private readonly IShipmentHistoryService _shipmentHistoryService;

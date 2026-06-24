@@ -12,5 +12,7 @@ namespace ShipmentTracking.Entities.DTOs.Shipment
 
         // Status (Durum) ve CreatedDate (Oluşturulma Tarihi) istemiyoruz, çünkü
         // yeni kargonun durumu varsayılan olarak "Hazırlanıyor" olacak ve tarihi sistem o an atayacak.
+
+        public int AppUserId { get; set; }
     }
 }

@@ -11,5 +11,6 @@ namespace ShipmentTracking.Entities.DTOs.Shipment
         public string ReceiverName { get; set; } = String.Empty;
         public string TrackingNumber { get; set; } = String.Empty;
         public string Status { get; set; } = String.Empty; // Güncellemede durumu da değiştirebiliriz
+        public int AppUserId { get; set; }
     }
 }

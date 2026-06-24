@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShipmentTracking.Business.Abstract;
 using ShipmentTracking.Entities.Concrete;
 using ShipmentTracking.Entities.DTOs.Shipment;
+using System.Security.Claims;
 
 namespace ShipmentTracking.API.Controllers
 {
@@ -10,6 +12,7 @@ namespace ShipmentTracking.API.Controllers
     [Route("api/[controller]")]
     // Bu sınıfın bir API denetleyicisi olduğunu belirtir. Otomatik doğrulama gibi özellikleri açar.
     [ApiController]
+    [Authorize]
     public class ShipmentsController : ControllerBase
     {
         private readonly IShipmentService _shipmentService;
@@ -38,9 +41,22 @@ namespace ShipmentTracking.API.Controllers
             return Ok(result);
         }
 
+        // 🎯 MÜHÜRLEME HAZIRLIĞI BURADA BAŞLIYOR!
         [HttpPost]
         public async Task<IActionResult> Add(ShipmentCreateDto shipmentCreateDto)
         {
+            // Kullanıcının Token'ı içindeki "Ben kimim?" (NameIdentifier/Sub) bilgisini çekiyoruz
+            var userIdClaim = User.Claims.FirstOrDefault(c =>
+                c.Type == ClaimTypes.NameIdentifier ||
+                c.Type == System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub ||
+                c.Type == "Sub");
+
+            // Eğer giren kişinin ID'sini bulduysak, Kargoya Mührünü basıyoruz!
+            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int currentUserId))
+            {
+                shipmentCreateDto.AppUserId = currentUserId;
+            }
+
             await _shipmentService.AddAsync(shipmentCreateDto);
             return StatusCode(201);
         }
@@ -48,6 +64,7 @@ namespace ShipmentTracking.API.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(ShipmentUpdateDto shipmentUpdateDto)
         {
+            // İleride buraya: "Admin değilse ve başkasının kargosunu güncelliyorsa yasakla (403)" kodunu ekleyeceğiz.
             await _shipmentService.UpdateAsync(shipmentUpdateDto);
             return Ok();
         }
@@ -61,6 +78,7 @@ namespace ShipmentTracking.API.Controllers
                 return NotFound();
             }
 
+            // İleride buraya: "Sadece kendi kargonu silebilirsin" güvenlik kodunu ekleyeceğiz.
             await _shipmentService.DeleteAsync(id);
             return Ok();
         }

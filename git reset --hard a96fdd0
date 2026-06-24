@@ -1,0 +1,25 @@
+[33m87d4867[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m feat: Kargo takip sistemi mühürleme ve yetkilendirme hazırlığı.
+[33ma96fdd0[m feat: JWT ve Personel Yönetimi tamamlandı.
+[33ma8b0b9f[m refactor: JWT kodlarınıa öğretmen notları eklendi.
+[33m52e5f69[m feat: JWT (JSON Web Token) tabanlı yetkilendirme mimarisi kuruldu.
+[33m3dc791f[m feat: BCrypt ile şifreleme (Password Hashing) entegre edildi.
+[33m3fcc825[m refactor: FluentValidation entegrasyonu ile doğrulama işlemleri merkezi hale getirildi.
+[33m70bc9fb[m feat: RBAC tabanlı Personel Kayıt (Register) sistemi ve UI güvenlik entegrasyonu tamamlandı.
+[33m73fd047[m feat: AuthController içerisine IAppUserService entegre edildi ve Register metodu eklendi.
+[33m7a8730a[m feat: Üst menüye (Navbar) dinamik oturum kontrolü ve Logout mekanizması eklendi
+[33m9362315[m feat: MVC Vitrin projesine Cookie Authentication ve Login arayüzü entegre edildi.
+[33meb1439b[m refactor: API giriş (Login) mekanizması AutoMapper mimarisine entegre edildi.
+[33m34f2b57[m feat: SweetAlert2 ve TempData ile global bildirim (Toast) sistemi entegre edildi.
+[33m6d1822b[m feat: Home/Index arama motoru entegrasyonu sağlandı
+[33m3cb9745[m feat: WebUI kargo hareket geçmişi ekleme entegrasyonu yapıldı
+[33m84622f6[m feat: Kargo hareket geçmişi (Zaman Çizelgesi) ekranı WebUI'a eklendi.
+[33m4c48c8b[m feat: WebUI (MVC) projesi oluşturuldu, HttpClient entegre edildi ve kargo listeleme sayfası API'ye bağlandı.
+[33m330a67b[m feat: kargo durumu için tablolar arası otomatik senkronizasyon sağlandı.
+[33m381da77[m feat: Shipments API için DTO, AutoMapper ve Async altyapısı tamamlandı.
+[33m654b480[m feat: kargo hareket geçmişi için API uçları oluşturuldu.
+[33m8c97a44[m feat: Shipments API uçları oluşturuldu ve veritabanı bağlantısı sağlandı
+[33mdc27577[m feat: Business katmanı tamamlandı ve kod standartları standardize edildi - IShipmentService ve IShipmentHistoryService arayüzleri oluşturuldu.
+[33m2ccf5d7[m feat: ShipmentHistory için Repository yapısı eklendi ve namespace düzeltmeleri yapıldı.
+[33m1d4ab63[m feat: DataAccess katmanı ve Generic Repository yapısı tamamlandı.
+[33m9183c4d[m Add project files.
+[33m3ed93de[m Add .gitattributes, .gitignore, README.md, and LICENSE.txt.

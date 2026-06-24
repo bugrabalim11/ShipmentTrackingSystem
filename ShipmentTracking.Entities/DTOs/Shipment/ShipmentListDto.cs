@@ -12,5 +12,6 @@ namespace ShipmentTracking.Entities.DTOs.Shipment
         public string ReceiverName { get; set; } = String.Empty;
         public string Status { get; set; } = String.Empty;
         public DateTime CreatedDate { get; set; }
+        public int AppUserId { get; set; }
     }
 }
