@@ -22,6 +22,12 @@ namespace ShipmentTracking.Entities.Concrete
         // Kargonun oluşturulma zamanı
         public DateTime CreatedDate { get; set; }
 
+        // Kargonun hangi personele ait olduğunu belirten Yabancı Anahtar (Foreign Key)
+        public int AppUserId { get; set; }
+
+        // Entity Framework'e bu ID'nin aslında "AppUser" tablosuna bağlı olduğunu söyleyen Navigasyon Özelliği
+        public AppUser AppUser { get; set; } = null!;
+
         // YENİ EKLENEN KISIM: Bire-Çok İlişki (Bir kargonun birden fazla geçmişi olur)
         public List<ShipmentHistory> ShipmentHistories { get; set; } = new List<ShipmentHistory>();
     }

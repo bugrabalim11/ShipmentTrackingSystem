@@ -45,18 +45,20 @@ namespace ShipmentTracking.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(ShipmentCreateDto shipmentCreateDto)
         {
-            // Kullanıcının Token'ı içindeki "Ben kimim?" (NameIdentifier/Sub) bilgisini çekiyoruz
+            // 1. Giren personelin cebindeki token'dan ID (Kimlik) bilgisini okuyoruz
             var userIdClaim = User.Claims.FirstOrDefault(c =>
                 c.Type == ClaimTypes.NameIdentifier ||
                 c.Type == System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub ||
                 c.Type == "Sub");
 
-            // Eğer giren kişinin ID'sini bulduysak, Kargoya Mührünü basıyoruz!
+            // 2. Eğer biletin içinden bu ID'yi başarıyla okuduysak...
             if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int currentUserId))
             {
+                // ...Kargoya "Bu kargoyu şu ID'li personel ekledi" mührünü basıyoruz!
                 shipmentCreateDto.AppUserId = currentUserId;
             }
 
+            // 3. Mühürlü kargoyu servise (veritabanına) gönderiyoruz
             await _shipmentService.AddAsync(shipmentCreateDto);
             return StatusCode(201);
         }
