@@ -8,16 +8,13 @@ using System.Security.Claims;
 
 namespace ShipmentTracking.API.Controllers
 {
-    // Dış dünyadan bu sınıfa nasıl ulaşılacağının adresi: "localhost:5000/api/shipments"
     [Route("api/[controller]")]
-    // Bu sınıfın bir API denetleyicisi olduğunu belirtir. Otomatik doğrulama gibi özellikleri açar.
     [ApiController]
-    [Authorize]
+    [Authorize] // Sınıf bazında güvenlik
     public class ShipmentsController : ControllerBase
     {
         private readonly IShipmentService _shipmentService;
 
-        // Dependency Injection: Resepsiyoniste, çalışacağı şube müdürünü (Servisi) veriyoruz.
         public ShipmentsController(IShipmentService shipmentService)
         {
             _shipmentService = shipmentService;
@@ -36,29 +33,24 @@ namespace ShipmentTracking.API.Controllers
             var result = await _shipmentService.GetByIdAsync(id);
             if (result == null)
             {
-                return NotFound();  // Bulunamazsa 404 dönüyoruz
+                return NotFound();
             }
             return Ok(result);
         }
 
-        // 🎯 MÜHÜRLEME HAZIRLIĞI BURADA BAŞLIYOR!
         [HttpPost]
         public async Task<IActionResult> Add(ShipmentCreateDto shipmentCreateDto)
         {
-            // 1. Giren personelin cebindeki token'dan ID (Kimlik) bilgisini okuyoruz
             var userIdClaim = User.Claims.FirstOrDefault(c =>
                 c.Type == ClaimTypes.NameIdentifier ||
                 c.Type == System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub ||
-                c.Type == "Sub");
+                c.Type == "sub");
 
-            // 2. Eğer biletin içinden bu ID'yi başarıyla okuduysak...
             if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int currentUserId))
             {
-                // ...Kargoya "Bu kargoyu şu ID'li personel ekledi" mührünü basıyoruz!
                 shipmentCreateDto.AppUserId = currentUserId;
             }
 
-            // 3. Mühürlü kargoyu servise (veritabanına) gönderiyoruz
             await _shipmentService.AddAsync(shipmentCreateDto);
             return StatusCode(201);
         }
@@ -66,7 +58,26 @@ namespace ShipmentTracking.API.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(ShipmentUpdateDto shipmentUpdateDto)
         {
-            // İleride buraya: "Admin değilse ve başkasının kargosunu güncelliyorsa yasakla (403)" kodunu ekleyeceğiz.
+            // 1. Orijinal kargoyu bul
+            var existingShipment = await _shipmentService.GetByIdAsync(shipmentUpdateDto.Id);
+            if (existingShipment == null) return NotFound();
+
+            // 2. İşlemi yapan kişinin kimliğini al
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier || c.Type == "sub");
+            int.TryParse(userIdClaim?.Value, out int currentUserId);
+
+            // 3. Admin mi kontrol et
+            bool isAdmin = User.IsInRole("Admin");  // 👑 PATRON KONTROLÜ
+
+            // 4. GÜVENLİK FİLTRESİ: Admin değilse ve kargo ona ait değilse YASAKLA!
+            if (!isAdmin && existingShipment.AppUserId != currentUserId)
+            {
+                return StatusCode(403);
+            }
+
+            // Kargonun asıl sahibini koru (Başka personel güncellese bile ilk ekleyenin ID'si değişmesin)
+            shipmentUpdateDto.AppUserId = existingShipment.AppUserId;
+
             await _shipmentService.UpdateAsync(shipmentUpdateDto);
             return Ok();
         }
@@ -74,13 +85,26 @@ namespace ShipmentTracking.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            // 1. Kargonun var olup olmadığını kontrol et
             var shipment = await _shipmentService.GetByIdAsync(id);
             if (shipment == null)
             {
                 return NotFound();
             }
 
-            // İleride buraya: "Sadece kendi kargonu silebilirsin" güvenlik kodunu ekleyeceğiz.
+            // 2. İşlemi yapan kişinin kimliğini al
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier || c.Type == "sub");
+            int.TryParse(userIdClaim?.Value, out int currentUserId);
+
+            // 3. Admin mi kontrol et
+            bool isAdmin = User.IsInRole("Admin");
+
+            // 4. GÜVENLİK FİLTRESİ: Admin değilse ve kargo ona ait değilse YASAKLA!
+            if (!isAdmin && shipment.AppUserId != currentUserId)
+            {
+                return StatusCode(403);
+            }
+
             await _shipmentService.DeleteAsync(id);
             return Ok();
         }
