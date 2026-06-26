@@ -7,14 +7,14 @@ using ShipmentTracking.Entities.DTOs.ShipmentHistory;
 using ShipmentTracking.WebUI.Models;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Net.Http.Headers;
 
 namespace ShipmentTracking.WebUI.Controllers
 {
     [Authorize]
-    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)] // GERİ TUŞU HAYALETİNİ ÖLDÜREN KOD
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class ShipmentController : Controller
     {
-        // API ile konuşmamızı sağlayacak sanal tarayıcı nesnemiz
         private readonly HttpClient _httpClient;
 
         public ShipmentController(HttpClient httpClient)
@@ -22,114 +22,94 @@ namespace ShipmentTracking.WebUI.Controllers
             _httpClient = httpClient;
         }
 
-        // Bunu ShipmentController sınıfının içine, metotların dışına ekle:
+        // =========================================================================
+        // 🎯 SİHİRLİ METOT: API'ye gitmeden önce Cüzdandaki Bileti Gösterir
+        // =========================================================================
         private void AttachToken()
         {
-            // Giriş yaparken cüzdana (Cookie) sakladığımız bileti buluyoruz
             var token = User.Claims.FirstOrDefault(c => c.Type == "jwt_token")?.Value;
 
             if (!string.IsNullOrEmpty(token))
             {
-                // Sanal postacımızın yaka kartına "Bearer [Bilet]" şeklinde iğneliyoruz
-                _httpClient.DefaultRequestHeaders.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
         }
 
         // 1. Kargo Listeleme Sayfası (Index)
         public async Task<IActionResult> Index()
         {
-            AttachToken(); // 🎯 POSTACIYA BİLETİNİ TAKTIK!
+            AttachToken(); // 🛑 POSTACIYA BİLETİNİ TAKTIK!
 
             var response = await _httpClient.GetAsync("https://localhost:7204/api/Shipments");
             if (response.IsSuccessStatusCode)
             {
-                // API'den gelen ham metni (JSON) oku
                 var jsonString = await response.Content.ReadAsStringAsync();
-
-                // O metni, C# listesine (List<ShipmentListDto>) dönüştür (Sihirli Kısım)
-                var shipments = JsonConvert.DeserializeObject<List<ShipmentListDto>>(jsonString);  // JSON Metni --> C# Nesnesi , Veri okurken
-
-                // Verileri View'a (Arayüze) gönder
+                var shipments = JsonConvert.DeserializeObject<List<ShipmentListDto>>(jsonString);
                 return View(shipments);
             }
             return View(new List<ShipmentListDto>());
         }
 
-        // 2. YENİ KARGO EKLEME SAYFASI (GET - Sadece Boş Formu Gösterir)
+        // 2. YENİ KARGO EKLEME SAYFASI (GET)
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        // 3. YENİ KARGO EKLEME İŞLEMİ (POST - Formu API'ye Gönderir)
+        // 3. YENİ KARGO EKLEME İŞLEMİ (POST)
         [HttpPost]
         public async Task<IActionResult> Create(ShipmentCreateDto shipmentCreateDto)
         {
-            AttachToken(); // 🛑 Kapıya gitmeden bileti taktık!
+            AttachToken(); // 🛑 BİLETİ TAKTIK!
 
-            // Kullanıcı zorunlu alanları doldurmadıysa, hatalarla birlikte aynı formu geri gönder
             if (!ModelState.IsValid)
             {
                 return View(shipmentCreateDto);
             }
 
-            // 1. DTO'yu API'nin anlayacağı dil olan JSON metnine çeviriyoruz
-            var jsonString = JsonConvert.SerializeObject(shipmentCreateDto);  // C# Nesnesi --> JSON Metni , Veri gönderirken
-
-            // 2. Bu metni HTTP üzerinden taşınabilecek bir "Paket" haline getiriyoruz
+            var jsonString = JsonConvert.SerializeObject(shipmentCreateDto);
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
 
-            // 3. API'ye POST isteği atıyoruz 
             var response = await _httpClient.PostAsync("https://localhost:7204/api/Shipments", content);
 
-            // Eğer API bize "201 Created" veya "200 OK" gibi başarılı bir yanıt dönerse...
             if (response.IsSuccessStatusCode)
             {
                 TempData["Success"] = "Yeni kargo sisteme başarıyla eklendi.";
-                return RedirectToAction("Index"); // Kullanıcıyı tekrar listeye yönlendir
+                return RedirectToAction("Index");
             }
 
-            // Başarısız olursa (örneğin API kapalıysa), ekrana hata mesajı bas
             ModelState.AddModelError("", "Kargo eklenirken bir hata oluştu. Lütfen tekrar deneyin.");
-            return View(shipmentCreateDto); // Aynı formu geri gönder
+            return View(shipmentCreateDto);
         }
 
-        // 4. GÜNCELLEME SAYFASI (GET - İçini dolduracağımız formu API'den getirir)
+        // 4. GÜNCELLEME SAYFASI (GET)
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            AttachToken(); // 🛑 Kapıya gitmeden bileti taktık!
+            AttachToken(); // 🛑 BİLETİ TAKTIK!
 
-            // Önce güncellenecek kargonun mevcut bilgilerini API'den çekiyoruz
             var response = await _httpClient.GetAsync($"https://localhost:7204/api/Shipments/{id}");
             if (response.IsSuccessStatusCode)
             {
                 var jsonString = await response.Content.ReadAsStringAsync();
-
-                // Gelen metni DTO'ya çevir (Deserialize)
                 var shipment = JsonConvert.DeserializeObject<ShipmentUpdateDto>(jsonString);
-
-                // Formu dolu bir şekilde ekrana gönder
                 return View(shipment);
             }
             return RedirectToAction("Index");
         }
 
-        // 5. GÜNCELLEME İŞLEMİ (POST - Değişen verileri API'ye gönderir)
+        // 5. GÜNCELLEME İŞLEMİ (POST)
         [HttpPost]
         public async Task<IActionResult> Update(ShipmentUpdateDto shipmentUpdateDto)
         {
-            AttachToken(); // 🛑 Kapıya gitmeden bileti taktık!
+            AttachToken(); // 🛑 BİLETİ TAKTIK!
 
-            if (!ModelState.IsValid) return View(shipmentUpdateDto); // Hatalarla birlikte aynı formu geri gönder
+            if (!ModelState.IsValid) return View(shipmentUpdateDto);
 
-            // DTO'yu API'ye göndermek için metne çevir (Serialize)
             var jsonString = JsonConvert.SerializeObject(shipmentUpdateDto);
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
 
-            // API'ye PUT (Güncelleme) isteği at
             var response = await _httpClient.PutAsync("https://localhost:7204/api/Shipments", content);
 
             if (response.IsSuccessStatusCode)
@@ -142,12 +122,11 @@ namespace ShipmentTracking.WebUI.Controllers
         }
 
         // 6. SİLME İŞLEMİ
-        [HttpPost]  // 🛑 Bir linkle değil, sadece güvenli bir formla tetiklenebilir!
+        [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            AttachToken(); // API kapısına gitmeden önce yine biletimizi takıyoruz
+            AttachToken(); // 🛑 BİLETİ TAKTIK!
 
-            // API'ye "Şu ID'li kargoyu sil" komutu gönderiyoruz
             var response = await _httpClient.DeleteAsync($"https://localhost:7204/api/Shipments/{id}");
 
             if (response.IsSuccessStatusCode)
@@ -159,28 +138,26 @@ namespace ShipmentTracking.WebUI.Controllers
                 TempData["Error"] = "Silerken bir hata oluştu. Yetkiniz olmayabilir.";
             }
 
-            return RedirectToAction("Index"); // İşlem bitince sayfayı yenile (Index'e dön)
+            return RedirectToAction("Index");
         }
 
         // 7. KARGO DETAY VE HAREKET GEÇMİŞİ SAYFASI
         [HttpGet]
         public async Task<IActionResult> Detail(int id)
         {
-            AttachToken(); // 🛑 Kapıya gitmeden bileti taktık!
+            AttachToken(); // 🛑 BİLETİ TAKTIK!
 
             var viewModel = new ShipmentDetailViewModel();
 
-            // 1. Kargonun ana bilgilerini API'den çekiyoruz
             var shipmentResponse = await _httpClient.GetAsync($"https://localhost:7204/api/Shipments/{id}");
             if (!shipmentResponse.IsSuccessStatusCode)
             {
-                return RedirectToAction("Index");  // Kargo bulunamazsa listeye geri dön
+                return RedirectToAction("Index");
             }
 
             var shipmentJson = await shipmentResponse.Content.ReadAsStringAsync();
             viewModel.Shipment = JsonConvert.DeserializeObject<ShipmentListDto>(shipmentJson)!;
 
-            // 2. Tüm hareket geçmişini API'den çekiyoruz
             var historyResponse = await _httpClient.GetAsync("https://localhost:7204/api/ShipmentHistories");
             if (historyResponse.IsSuccessStatusCode)
             {
@@ -188,14 +165,12 @@ namespace ShipmentTracking.WebUI.Controllers
                 var allHistories = JsonConvert.DeserializeObject<List<ShipmentHistoryListDto>>(historyJson);
                 if (allHistories != null)
                 {
-                    // İçinden sadece bu kargoya (ShipmentId) ait olanları filtreleyip, tarihe göre sıralıyoruz
                     viewModel.Histories = allHistories
                         .Where(h => h.ShipmentId == id)
-                        .OrderByDescending(h => h.ChangeDate)  // En yeni hareket en üstte gözüksün
+                        .OrderByDescending(h => h.ChangeDate)
                         .ToList();
                 }
             }
-            // Torbamızı (ViewModel) arayüze gönderiyoruz
             return View(viewModel);
         }
 
@@ -203,7 +178,6 @@ namespace ShipmentTracking.WebUI.Controllers
         [HttpGet]
         public IActionResult AddHistory(int id)
         {
-            // Ekrana boş bir DTO gönderiyoruz ama HANGİ kargoya ait olduğunu bilsin diye ID'yi içine gizlice koyuyoruz
             var dto = new ShipmentHistoryCreateDto { ShipmentId = id };
             return View(dto);
         }
@@ -212,20 +186,17 @@ namespace ShipmentTracking.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddHistory(ShipmentHistoryCreateDto dto)
         {
-            AttachToken(); // 🛑 Kapıya gitmeden bileti taktık!
+            AttachToken(); // 🛑 BİLETİ TAKTIK!
 
-            if (!ModelState.IsValid) return View(dto); // ! uygun değilse
+            if (!ModelState.IsValid) return View(dto);
 
-            // DTO'yu API'ye göndermek üzere JSON metnine çevir (Serialize)
             var jsonString = JsonConvert.SerializeObject(dto);
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
 
-            // API'deki ShipmentHistories ucuna POST isteği atıyoruz
             var response = await _httpClient.PostAsync("https://localhost:7204/api/ShipmentHistories", content);
 
             if (response.IsSuccessStatusCode)
             {
-                // Başarılı olursa, bizi yeni eklenen hareketleri görmemiz için o kargonun Detay sayfasına geri fırlat!
                 TempData["Success"] = "Kargo hareketi başarıyla güncellendi.";
                 return RedirectToAction("Detail", new { id = dto.ShipmentId });
             }
