@@ -108,5 +108,16 @@ namespace ShipmentTracking.API.Controllers
             await _shipmentService.DeleteAsync(id);
             return Ok();
         }
+
+        [HttpGet("GetByPersonnel/{id}")]
+        [Authorize(Roles = "Admin")] // Sadece Admin'in görmesi güvenli olur
+        public async Task<IActionResult> GetByPersonnel(int id)
+        {
+            // Tüm kargoları çekip ilgili personelin AppUserId'si ile eşleşenleri filtreliyoruz
+            var allShipments = await _shipmentService.GetListAsync();
+            var personnelShipments = allShipments.Where(s => s.AppUserId == id).ToList();
+
+            return Ok(personnelShipments);
+        }
     }
 }

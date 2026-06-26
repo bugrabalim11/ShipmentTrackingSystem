@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ShipmentTracking.Entities.DTOs.Auth;
+using ShipmentTracking.Entities.DTOs.Shipment;
 using ShipmentTracking.WebUI.Models;
 using System.Net.Http.Headers; // JWT Bileti için eklendi
 using System.Security.Claims;
@@ -41,6 +42,19 @@ namespace ShipmentTracking.WebUI.Controllers
         public AuthController(HttpClient httpClient)
         {
             _httpClient = httpClient;
+        }
+
+        private void AttachToken()
+        {
+            // Giriş yaparken cüzdana (Cookie) sakladığımız bileti buluyoruz
+            var token = User.Claims.FirstOrDefault(c => c.Type == "jwt_token")?.Value;
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                // Sanal postacımızın yaka kartına "Bearer [Bilet]" şeklinde iğneliyoruz
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            }
         }
 
         // 1. GİRİŞ SAYFASINI GÖSTEREN METOT (GET)
@@ -242,6 +256,26 @@ namespace ShipmentTracking.WebUI.Controllers
 
             // İşlem bitince sayfayı yenilemek için aynı sayfaya yönlendiriyoruz.
             return RedirectToAction("PersonnelList");
+        }
+
+        // PERSONELİN İŞLEMLERİNİ (KARGO GEÇMİŞİ) LİSTELEME
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> PersonnelShipments(int id, string personnelName)
+        {
+            AttachToken();
+            ViewBag.PersonnelName = personnelName;
+
+            var response = await _httpClient.GetAsync($"https://localhost:7204/api/Shipments/GetByPersonnel/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                var list = JsonConvert.DeserializeObject<List<ShipmentListDto>>(data);
+                return View(list);
+            }
+
+            return View(new List<ShipmentListDto>());
         }
     }
 }

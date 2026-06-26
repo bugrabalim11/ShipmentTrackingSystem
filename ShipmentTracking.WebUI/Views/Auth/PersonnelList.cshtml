@@ -59,13 +59,23 @@
                                             <span class="badge bg-info text-dark rounded-pill px-3 py-2"><i class="bi bi-person-badge"></i> Personel</span>
                                         }
                                     </td>
-                                    <td>
-                                        <!-- Silme İşlemi İçin Form -->
-                                        <form asp-action="DeletePersonnel" asp-controller="Auth" asp-route-id="@user.Id" method="post" class="d-inline" onsubmit="return confirm('@user.FirstName adlı personeli silmek istediğinize emin misiniz? Bu işlem geri alınamaz!');">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-trash-fill"></i> Sil
-                                            </button>
-                                        </form>
+                                    <td class="align-middle">
+                                        <!-- DÜZELTİLEN KISIM: align-items-center ve flex-nowrap eklendi -->
+                                        <div class="d-flex justify-content-center align-items-center gap-2 flex-nowrap">
+                                            
+                                            <!-- İŞLEMLERİ GÖR BUTONU -->
+                                            <a asp-action="PersonnelShipments" asp-controller="Auth" asp-route-id="@user.Id" asp-route-personnelName="@user.FirstName @user.LastName" class="btn btn-sm btn-info text-white shadow-sm text-nowrap">
+                                                📦 İşlemleri Gör
+                                            </a>
+
+                                            <!-- SİL BUTONU -->
+                                            <form asp-action="DeletePersonnel" asp-controller="Auth" asp-route-id="@user.Id" method="post" class="m-0 p-0" onsubmit="return confirm('@user.FirstName adlı personeli silmek istediğinize emin misiniz?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger shadow-sm text-nowrap">
+                                                    🗑️ Sil
+                                                </button>
+                                            </form>
+
+                                        </div>
                                     </td>
                                 </tr>
                             }
