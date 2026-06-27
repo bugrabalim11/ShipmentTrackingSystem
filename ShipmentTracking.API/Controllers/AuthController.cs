@@ -111,10 +111,10 @@ namespace ShipmentTracking.API.Controllers
             // 3. Veritabanına DEĞİL, Business (İş) katmanına gönderiyoruz!
             await _appUserService.AddAsync(newUser);
 
-            return Ok();
+            return Ok(201);  // 201 Created döndürüyoruz, mesaj yok.
         }
 
-        // 1. TÜM PERSONELLERİ LİSTELEME METODU (Sadece Admin görebilir)
+        // TÜM PERSONELLERİ LİSTELEME METODU (Sadece Admin görebilir)
         [HttpGet("GetAllPersonnel")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllPersonnel()
@@ -127,34 +127,68 @@ namespace ShipmentTracking.API.Controllers
             return Ok(usersDto);
         }
 
-        // 2. PERSONEL SİLME METODU (Sadece Admin silebilir)
-        [HttpDelete("DeletePersonnel/{id}")] // DÜZELTİLDİ: Aradaki boşluk silindi
+        [HttpGet("GetPersonnelById/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetPersonnelById(int id)
+        {
+            var user = await _appUserService.GetByIdAsync(id);
+            if (user == null) return NotFound();
+
+            var userDto = _mapper.Map<UserResponseDto>(user);
+            return Ok(userDto);
+        }
+
+        [HttpPut("UpdatePersonnel")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdatePersonnel(UserResponseDto userResponseDto)
+        {
+            var existingUser = await _appUserService.GetByIdAsync(userResponseDto.Id);
+            if (existingUser == null) return NotFound();
+
+            // Güvenlik Kalkanı: Admin rolünü yanlışlıkla "Personel" yapmayı engelleyebilirsin (İsteğe bağlı)
+            if (existingUser.Role?.Trim().ToLower() == "admin" && userResponseDto.Role?.Trim().ToLower() != "admin")
+            {
+                return BadRequest(); // Sistemdeki Admin'in yetkisi düşürülemez.
+            }
+
+            // 2. Dışarıdan gelen DTO'daki bilgileri (Ad, Soyad, Rol) mevcut adama kopyalıyoruz
+            existingUser.FirstName = userResponseDto.FirstName;
+            existingUser.LastName = userResponseDto.LastName;
+            existingUser.Role = userResponseDto.Role;
+            // Şifreyi ve Kullanıcı adını BİLEREK değiştirtmiyoruz! (Güvenlik)
+
+            _appUserService.Update(existingUser);
+            return NoContent();  // 204 No Content: "İşlem başarılı ama sana dönecek bir mesajım yok" demek.
+        }
+
+        [HttpDelete("DeletePersonnel/{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeletePersonnel(int id)
         {
             var user = await _appUserService.GetByIdAsync(id);
-            if (user == null)
-            {
-                return NotFound("Silinecek personel bulunamadı.");
-            }
+            if(user == null) return NotFound();
 
-            // DÜZELTİLDİ: Büyük/küçük harf ve boşluk hatalarına karşı zırh ekledik!
             if (user.Role != null && user.Role.Trim().ToLower() == "admin")
             {
-                return BadRequest("Sistemdeki bir Admin hesabı silinemez!");
+                // Sadece iş kurallarına aykırı bir durumda spesifik hata mesajı dönmek mantıklıdır
+                return BadRequest("Sistemdeki bir admin hesabı silinemez!");
             }
 
+            // ===================================================================================
+            // GÜVENLİK AĞI (TRY-CATCH)
+            // try: "Veritabanından silmeyi dene." Riskli işlemdir, veritabanı kurallarına takılabilir.
+            // catch: "Eğer silerken veritabanı hata fırlatırs (örneğin adamın kargoları var diye silmeye izin vermezse)
+            // programı çökertme, buraya düş ve durumu bizim kontrolümüzde yönet."
+            // ===================================================================================
             try
             {
                 _appUserService.Delete(user);
-                return Ok("Personel başarıyla sistemden silindi.");
+                return NoContent();  // 204 No Content: Başarılı bir silme işlemi sonrası standart yanıt
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // İlişkili veri (kargo) varsa EF çöker, burada yakalayıp düzgün mesaj döneriz
-                string gercekHata = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                return StatusCode(500, $"SİSTEM HATASI: {gercekHata}");
-            }
+                return StatusCode(500); // Sistem hatası, mesajı MVC tarafında biz uyduracağız.
+            } 
         }
     }
 }

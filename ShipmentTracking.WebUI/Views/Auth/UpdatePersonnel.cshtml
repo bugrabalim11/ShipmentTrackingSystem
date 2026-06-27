@@ -1,0 +1,62 @@
+﻿@model ShipmentTracking.WebUI.Models.UserResponseViewModel
+
+@{
+    ViewData["Title"] = "Personel Düzenle";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="text-primary fw-bold">✏️ Personel Düzenle</h3>
+                <a asp-action="PersonnelList" class="btn btn-outline-secondary btn-sm shadow-sm">
+                    <i class="bi bi-arrow-left"></i> Vazgeç
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <!-- Form Post işlemiyle UpdatePersonnel metodunu tetikler -->
+                    <form asp-action="UpdatePersonnel" asp-controller="Auth" method="post">
+                        
+                        <!-- GİZLİ ID: Güncellenecek kişinin ID'sini sayfada saklamamız lazım -->
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-muted fw-bold">Kullanıcı Adı</label>
+                            <!-- readonly (Sadece okunabilir): API'de username'i güncellemeyeceğimiz için kilitledik -->
+                            <input asp-for="UserName" class="form-control bg-light" readonly />
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Adı</label>
+                            <input asp-for="FirstName" class="form-control" required />
+                            <span asp-validation-for="FirstName" class="text-danger small"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Soyadı</label>
+                            <input asp-for="LastName" class="form-control" required />
+                            <span asp-validation-for="LastName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Sistem Rolü</label>
+                            <select asp-for="Role" class="form-select">
+                                <option value="Admin">🛡️ Admin (Tüm Yetkiler)</option>
+                                <option value="Personnel">📦 Personel (Kargo Yönetimi)</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning fw-bold text-dark shadow-sm">
+                                <i class="bi bi-save me-1"></i> Değişiklikleri Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -225,5 +225,54 @@ namespace ShipmentTracking.WebUI.Controllers
 
             return View(new List<ShipmentListDto>());
         }
+
+        // =========================================================================
+        // 1. DÜZENLEME SAYFASINI AÇ (GET) - Verileri formun içine doldurur
+        // İçindeki parametre int id olduğu için api da getperesonnelbyid yi çalıştırıyor
+        // =========================================================================
+        [HttpGet]
+        [Authorize(Roles ="Admin")]
+        public async Task<IActionResult> UpdatePersonnel(int id)
+        {
+            AttachToken();
+            var response = await _httpClient.GetAsync($"https://localhost:7204/api/Auth/GetPersonnelById/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                var user = JsonConvert.DeserializeObject<UserResponseViewModel>(data);
+                return View(user);
+            }
+            // Personel bulunamazsa veya hata olursa listeye geri şutla
+            TempData["Error"] = "Güncellenecek personel bulunamadı.";
+            return View("PersonnelList");
+        }
+
+        // =========================================================================
+        // 2. DÜZENLEMEYİ KAYDET (POST) - Yeni verileri API'ye yollar
+        // =========================================================================
+        [HttpPost] 
+        [Authorize(Roles ="Admin")]
+        public async Task<IActionResult>UpdatePersonnel(UserResponseViewModel userResponseViewModel)
+        {
+            AttachToken();
+
+            // Güvenlik Duvarı: Kullanıcı adı kısmını sildiyse vs. formu geri yolla
+            if (!ModelState.IsValid) return View(userResponseViewModel);
+
+            var jsonString = JsonConvert.SerializeObject(userResponseViewModel);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PutAsync("https://localhost:7204/api/Auth/UpdatePersonnel", content);
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Success"] = "Personel bilgileri başarıyla güncellendi.";
+                return RedirectToAction("PersonnelList");
+            }
+
+            // Hata olursa formu hatalarla beraber geri göster
+            ModelState.AddModelError("", "Güncelleme sırasında bir hata oluştu.");
+            return View(userResponseViewModel);
+        }
     }
 }
