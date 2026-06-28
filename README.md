@@ -4,40 +4,19 @@ Bu proje, kargo süreçlerinin baştan sona yönetilebildiği, rol bazlı yetkil
 
 Proje, bağımsız bir RESTful API arka ucu (Backend) ve bu API ile haberleşen bir ASP.NET Core MVC ön yüzünden (Frontend) oluşmaktadır.
 
-📸 Ekran Görüntüleri
+## 📸 Ekran Görüntüleri
 
------ Ana Sayfa/Kargo Sorgula -----
-https://github.com/user-attachments/assets/a3256d32-9f9a-4c5f-8f2d-5ff7aa258cff
+| Ana Sayfa / Sorgula | Giriş Ekranı | Kargoları Yönet | Kargo Detay |
+| :---: | :---: | :---: | :---: |
+| ![Ana Sayfa](https://github.com/user-attachments/assets/a3256d32-9f9a-4c5f-8f2d-5ff7aa258cff) | ![Giriş](https://github.com/user-attachments/assets/f3d75577-b5fa-419f-8568-6c0bfd8a52a9) | ![Yönet](https://github.com/user-attachments/assets/34d439f1-b037-482d-af16-90b22ffbc39d) | ![Detay](https://github.com/user-attachments/assets/a47ab764-2b37-427d-8fdf-31a59704bac9) |
 
------ Sisteme Giriş Ekranı -----
-https://github.com/user-attachments/assets/f3d75577-b5fa-419f-8568-6c0bfd8a52a9
+| Kargo Güncelle | Yeni Kargo Ekle | Personel Yönetimi | İşlem Geçmişi |
+| :---: | :---: | :---: | :---: |
+| ![Güncelle](https://github.com/user-attachments/assets/0337744e-a24a-45e9-8feb-2856b0387608) | ![Ekle](https://github.com/user-attachments/assets/24fe7575-a350-4ead-ae4f-52ec8c3fb2d9) | ![Personel](https://github.com/user-attachments/assets/f8633e0b-3334-4964-ac22-d20d10d8eed4) | ![Geçmiş](https://github.com/user-attachments/assets/72661fa9-72a0-492d-953c-2ce49ec58982) |
 
------ Kargoları Yönet -----
-https://github.com/user-attachments/assets/34d439f1-b037-482d-af16-90b22ffbc39d
-
------ Kargo Detay Raporu -----
-https://github.com/user-attachments/assets/a47ab764-2b37-427d-8fdf-31a59704bac9
-
------ Kargo Bilgileri Güncelle -----
-https://github.com/user-attachments/assets/0337744e-a24a-45e9-8feb-2856b0387608
-
------ Yeni Kargo Ekle -----
-https://github.com/user-attachments/assets/24fe7575-a350-4ead-ae4f-52ec8c3fb2d9
-
------ Personel Yönetimi -----
-https://github.com/user-attachments/assets/f8633e0b-3334-4964-ac22-d20d10d8eed4
-
------ İşlem Geçmişi -----
-https://github.com/user-attachments/assets/72661fa9-72a0-492d-953c-2ce49ec58982
-
------ Personel Düzenle -----
-https://github.com/user-attachments/assets/ab9d5c43-c065-4a64-98b2-698717cc8544
-
------ Yeni Perosnel Kaydı -----
-https://github.com/user-attachments/assets/696fde5a-58a5-4f76-993e-e37ab98d360d
-
-Not: Repoyu klonladıktan veya ekran görüntülerini aldıktan sonra, resimleri GitHub'daki klasörünüze yükleyip linklerini yukarıdaki alanlara ekleyebilirsiniz.
-
+| Personel Düzenle | Yeni Personel Kaydı |
+| :---: | :---: |
+| ![Düzenle](https://github.com/user-attachments/assets/ab9d5c43-c065-4a64-98b2-698717cc8544) | ![Kayıt](https://github.com/user-attachments/assets/696fde5a-58a5-4f76-993e-e37ab98d360d) |
 🚀 Proje Özellikleri
 
 Kimlik Doğrulama & Yetkilendirme (Auth): JWT (JSON Web Token) tabanlı güvenli giriş sistemi. Kullanıcı şifreleri BCrypt ile şifrelenerek veritabanında saklanmaktadır.
