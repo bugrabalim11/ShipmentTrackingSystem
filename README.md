@@ -19,17 +19,17 @@ Proje, bağımsız bir RESTful API arka ucu (Backend) ve bu API ile haberleşen 
 | ![Düzenle](https://github.com/user-attachments/assets/ab9d5c43-c065-4a64-98b2-698717cc8544) | ![Kayıt](https://github.com/user-attachments/assets/696fde5a-58a5-4f76-993e-e37ab98d360d) |
 🚀 Proje Özellikleri
 
-Kimlik Doğrulama & Yetkilendirme (Auth): JWT (JSON Web Token) tabanlı güvenli giriş sistemi. Kullanıcı şifreleri BCrypt ile şifrelenerek veritabanında saklanmaktadır.
+- Kimlik Doğrulama & Yetkilendirme (Auth): JWT (JSON Web Token) tabanlı güvenli giriş sistemi. Kullanıcı şifreleri BCrypt ile şifrelenerek veritabanında saklanmaktadır.
 
-Rol Yönetimi (RBAC): Admin ve Personel olmak üzere iki farklı yetki seviyesi.
+- Rol Yönetimi (RBAC): Admin ve Personel olmak üzere iki farklı yetki seviyesi.
 
-Personel Yönetimi (Sadece Admin): Sisteme yeni personel ekleme, bilgileri (ad, soyad, rol) güncelleme, silme ve personelin yaptığı kargo işlemlerinin geçmişini görüntüleme.
+- Personel Yönetimi (Sadece Admin): Sisteme yeni personel ekleme, bilgileri (ad, soyad, rol) güncelleme, silme ve personelin yaptığı kargo işlemlerinin geçmişini görüntüleme.
 
-Kargo Yönetimi: Sisteme yeni kargo ekleme, kargo bilgilerini güncelleme ve silme.
+- Kargo Yönetimi: Sisteme yeni kargo ekleme, kargo bilgilerini güncelleme ve silme.
 
-Kargo Hareket (İşlem) Geçmişi: Kargoların durumlarını (Örn: "Şubeye Ulaştı", "Dağıtıma Çıktı") tarih bazlı olarak sisteme işleme ve detay sayfasında listeleme.
+- Kargo Hareket (İşlem) Geçmişi: Kargoların durumlarını (Örn: "Şubeye Ulaştı", "Dağıtıma Çıktı") tarih bazlı olarak sisteme işleme ve detay sayfasında listeleme.
 
-Halka Açık Kargo Sorgulama: Sisteme giriş yapmayan (misafir) kullanıcıların takip numarası ile kargolarının durumunu sorgulayabileceği public arayüz.
+- Halka Açık Kargo Sorgulama: Sisteme giriş yapmayan (misafir) kullanıcıların takip numarası ile kargolarının durumunu sorgulayabileceği public arayüz.
 
 🛠️ Kullanılan Teknolojiler ve Mimari
 
@@ -37,27 +37,27 @@ Bu proje, "Clean Code" ve ayrık bileşen (Separation of Concerns) prensipleri g
 
 Backend (ShipmentTracking.API & Data/Business Katmanları)
 
-Framework: ASP.NET Core Web API
+- Framework: ASP.NET Core Web API
 
-ORM: Entity Framework Core
+- ORM: Entity Framework Core
 
-Veritabanı: PostgreSQL
+- Veritabanı: PostgreSQL
 
-Mimari: N-Tier Architecture (Entities, DataAccess, Business, API) ve Generic Repository Pattern
+- Mimari: N-Tier Architecture (Entities, DataAccess, Business, API) ve Generic Repository Pattern
 
-Güvenlik: JWT (JSON Web Token) & BCrypt.Net Password Hashing
+- Güvenlik: JWT (JSON Web Token) & BCrypt.Net Password Hashing
 
-Veri Transferi (DTO): AutoMapper ile DTO (Data Transfer Object) entegrasyonu.
+- Veri Transferi (DTO): AutoMapper ile DTO (Data Transfer Object) entegrasyonu.
 
 Frontend (ShipmentTracking.WebUI)
 
-Framework: ASP.NET Core MVC
+- Framework: ASP.NET Core MVC
 
-Http İstemcisi: HttpClient ile RESTful API entegrasyonu ve merkezi Token yönetimi (BaseController yaklaşımı).
+- Http İstemcisi: HttpClient ile RESTful API entegrasyonu ve merkezi Token yönetimi (BaseController yaklaşımı).
 
-Arayüz (UI): HTML5, CSS3, Bootstrap 5
+- Arayüz (UI): HTML5, CSS3, Bootstrap 5
 
-Bildirimler: SweetAlert2 (Kullanıcı dostu toast bildirimleri)
+- Bildirimler: SweetAlert2 (Kullanıcı dostu toast bildirimleri)
 
 🔐 Test Hesapları
 
