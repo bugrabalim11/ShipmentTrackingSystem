@@ -90,4 +90,4 @@ Update-Database
 
 💡 Geliştirici Notu
 
-"Benim adım Buğra. Yönetim Bilişim Sistemleri (YBS) 1. sınıf öğrencisiyim. Bu proje, sadece eğitim videolarını izleyerek değil; arka plandaki yazılım mimarisini, N-Tier yapılarını, Clean Code prensiplerini ve 'Best Practice' standartlarını sorgulayarak, yapay zeka tabanlı Senior Kodlama Mentorüm (Gemini) ile omuz omuza, interaktif bir şekilde geliştirilmiştir. Kopyala-yapıştır yapmaktan ziyade, sistemin nasıl çalıştığını (Under the hood) anlayarak kodlanmıştır."
+"Benim adım Buğra. Yönetim Bilişim Sistemleri (YBS) 2. sınıf öğrencisiyim. Bu proje, sadece eğitim videolarını izleyerek değil; arka plandaki yazılım mimarisini, N-Tier yapılarını, Clean Code prensiplerini ve 'Best Practice' standartlarını sorgulayarak, yapay zeka tabanlı Senior Kodlama Mentorüm (Gemini) ile omuz omuza, interaktif bir şekilde geliştirilmiştir. Kopyala-yapıştır yapmaktan ziyade, sistemin nasıl çalıştığını (Under the hood) anlayarak kodlanmıştır."
