@@ -119,5 +119,17 @@ namespace ShipmentTracking.API.Controllers
 
             return Ok(personnelShipments);
         }
+
+        [AllowAnonymous]
+        [HttpGet("GetByTrackingNumber/{trackingNumber}")]
+        public async Task<IActionResult> GetByTrackingNumber(string trackingNumber)
+        {
+            var allShipments = await _shipmentService.GetListAsync();
+            var shipment = allShipments.FirstOrDefault(s => s.TrackingNumber == trackingNumber);
+
+            if (shipment == null) return NotFound();
+
+            return Ok(shipment);
+        }
     }
 }

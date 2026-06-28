@@ -32,7 +32,7 @@ namespace ShipmentTracking.API.Controllers
         {
             var result = await _shipmentHistoryService.GetByIdAsync(id);
             if (result == null) return NotFound(); // 404 Not Found
-            
+
             return Ok(result); // 200 OK ve Veri
         }
 
@@ -55,6 +55,16 @@ namespace ShipmentTracking.API.Controllers
         {
             await _shipmentHistoryService.DeleteAsync(id);
             return NoContent();
+        }
+
+        [AllowAnonymous]
+        [HttpGet("GetByShipmnetId/{shipmnetId}")]
+        public async Task<IActionResult> GetByShipmnetId(int shipmnetId)
+        {
+            var allHistories = await _shipmentHistoryService.GetAllAsync();
+            var histores = allHistories.Where(h => h.ShipmentId == shipmnetId);
+
+            return Ok(histores);
         }
     }
 }

@@ -17,57 +17,46 @@ namespace ShipmentTracking.WebUI.Controllers
             _httpClient = httpClient;
         }
 
-        // Arama işlemi sadece veri "okuduğu" için [HttpGet] kullanıyoruz
+        // Artık okyanusu çekmiyoruz, sadece istediğimiz kargoyu API'den noktasal olarak istiyoruz.
         [HttpGet]
         public async Task<IActionResult> Index(string trackingNumber)
         {
-            // Eğer sayfa ilk defa açılıyorsa (arama çubuğu boşsa), boş ekranı göster
-            if (string.IsNullOrEmpty(trackingNumber))
-            {
-                return View(null);
-            }
+            if (string.IsNullOrEmpty(trackingNumber)) return View(null);
 
-            var response = await _httpClient.GetAsync("https://localhost:7204/api/Shipments");
+            // 1. API'ye Diyoruz ki: "Bana SADECE şu numaralı kargoyu ver!"
+            var response = await _httpClient.GetAsync($"https://localhost:7204/api/Shipments/GetByTrackingNumber/{trackingNumber}");
 
             if (response.IsSuccessStatusCode)
             {
                 var jsonString = await response.Content.ReadAsStringAsync();
-                var allShipments = JsonConvert.DeserializeObject<List<ShipmentListDto>>(jsonString);
+                var shipmnet = JsonConvert.DeserializeObject<ShipmentListDto>(jsonString);
 
-                // API'den gelen listede, müşterinin girdiği Takip Numarasını arıyoruz
-                var shipment = allShipments?.FirstOrDefault(s => s.TrackingNumber == trackingNumber);
-
-                if (shipment != null)
+                if (shipmnet != null)
                 {
-                    // Kargo bulundu! Şimdi detaylarını paketlemek için o meşhur ViewModel'i (Sunum Tabağı) hazırlıyoruz
                     var viewModel = new ShipmentDetailViewModel
                     {
-                        Shipment = shipment
+                        Shipment = shipmnet
                     };
 
-                    // Kargonun geçmişini çekiyoruz
-                    var historyResponse = await _httpClient.GetAsync($"https://localhost:7204/api/ShipmentHistories");
+                    // 2. API'ye Diyoruz ki: "Bana SADECE bu kargonun geçmişini ver!"
+                    var historyResponse = await _httpClient.GetAsync($"https://localhost:7204/api/ShipmentHistories/GetByShipmentId/{shipmnet.Id}");
+
                     if (historyResponse.IsSuccessStatusCode)
                     {
                         var historyJson = await historyResponse.Content.ReadAsStringAsync();
-                        var allHistories = JsonConvert.DeserializeObject<List<ShipmentHistoryListDto>>(historyJson);
+                        var shipmentHistories = JsonConvert.DeserializeObject<List<ShipmentHistoryListDto>>(historyJson);
 
-                        // Tüm geçmişin içinden sadece bulduğumuz kargonun ID'sine ait olanları süzüyoruz
-                        viewModel.Histories = allHistories?
-                            .Where(h => h.ShipmentId == shipment.Id)
+                        viewModel.Histories = shipmentHistories?
                             .OrderByDescending(h => h.ChangeDate)
                             .ToList() ?? new List<ShipmentHistoryListDto>();
                     }
 
-                    return View(viewModel); // Dolu tabakla ekrana dön
-                }
-                else
-                {
-                    // Kargo bulunamazsa ekrana uyarı mesajı göndermek için ViewBag (Geçici Çanta) kullanıyoruz
-                    ViewBag.ErrorMessage = "Bu takip numarasına ait bir kargo bulunamadı. Lütfen numarayı kontrol ediniz.";
+                    return View(viewModel);  // Dolu tabakla ekrana dön
                 }
             }
 
+            // Kargo bulunamazsa veya 404/401 dönerse
+            ViewBag.ErrorMessage = "Bu takip numarasına ait bir kargo bulunamadı. Lütfen numarayı kontrol ediniz.";
             return View(null);
         }
     }
