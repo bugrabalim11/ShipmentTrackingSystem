@@ -63,13 +63,13 @@ Frontend (ShipmentTracking.WebUI)
 
 Projeyi ayağa kaldırdıktan sonra sistemi test etmek için aşağıdaki hesapları kullanabilirsiniz:
 
-Rol -> Admin -> Personel
+- Rol -> Admin -> Personel
 
-Kullanıcı Adı -> superadmin -> bugra11
+- Kullanıcı Adı -> superadmin -> bugra11
 
-Şifre -> Password -> Bugra123
+- Şifre -> Password -> Bugra123
 
-Yetkiler -> Personel yönetimi (Ekle/Sil/Düzenle), tüm kargo işlemleri. -> Kargo ekleme, kargo durumu güncelleme. Personel paneline erişemez.
+- Yetkiler -> Personel yönetimi (Ekle/Sil/Düzenle), tüm kargo işlemleri. -> Kargo ekleme, kargo durumu güncelleme. Personel paneline erişemez.
 
 
 ⚙️ Kurulum ve Çalıştırma
