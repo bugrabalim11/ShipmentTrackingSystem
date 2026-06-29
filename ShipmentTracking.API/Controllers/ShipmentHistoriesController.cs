@@ -58,13 +58,13 @@ namespace ShipmentTracking.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("GetByShipmnetId/{shipmnetId}")]
-        public async Task<IActionResult> GetByShipmnetId(int shipmnetId)
+        [HttpGet("GetByShipmentId/{shipmentId}")]
+        public async Task<IActionResult> GetByShipmentId(int shipmentId)
         {
             var allHistories = await _shipmentHistoryService.GetAllAsync();
-            var histores = allHistories.Where(h => h.ShipmentId == shipmnetId);
+            var histories = allHistories.Where(h => h.ShipmentId == shipmentId).ToList(); // .ToList() eklemek güvenlidir
 
-            return Ok(histores);
+            return Ok(histories);
         }
     }
 }

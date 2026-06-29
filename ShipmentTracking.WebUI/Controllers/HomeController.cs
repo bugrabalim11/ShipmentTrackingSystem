@@ -29,17 +29,17 @@ namespace ShipmentTracking.WebUI.Controllers
             if (response.IsSuccessStatusCode)
             {
                 var jsonString = await response.Content.ReadAsStringAsync();
-                var shipmnet = JsonConvert.DeserializeObject<ShipmentListDto>(jsonString);
+                var shipment = JsonConvert.DeserializeObject<ShipmentListDto>(jsonString);
 
-                if (shipmnet != null)
+                if (shipment != null)
                 {
                     var viewModel = new ShipmentDetailViewModel
                     {
-                        Shipment = shipmnet
+                        Shipment = shipment
                     };
 
                     // 2. API'ye Diyoruz ki: "Bana SADECE bu kargonun geçmişini ver!"
-                    var historyResponse = await _httpClient.GetAsync($"https://localhost:7204/api/ShipmentHistories/GetByShipmentId/{shipmnet.Id}");
+                    var historyResponse = await _httpClient.GetAsync($"https://localhost:7204/api/ShipmentHistories/GetByShipmentId/{shipment.Id}");
 
                     if (historyResponse.IsSuccessStatusCode)
                     {
