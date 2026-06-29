@@ -17,6 +17,7 @@ Proje, bağımsız bir RESTful API arka ucu (Backend) ve bu API ile haberleşen 
 | Personel Düzenle | Yeni Personel Kaydı | Ana Sayfa/Kargo Sorgula |
 | :---: | :---: | :---: |
 | ![Düzenle](https://github.com/user-attachments/assets/ab9d5c43-c065-4a64-98b2-698717cc8544) | ![Kayıt](https://github.com/user-attachments/assets/696fde5a-58a5-4f76-993e-e37ab98d360d) | ![Ana Sayfa/Kargo Sorgula](https://github.com/user-attachments/assets/d1a57332-3524-4dd6-aa60-d44e619fac5c) |
+
 🚀 Proje Özellikleri
 
 - Kimlik Doğrulama & Yetkilendirme (Auth): JWT (JSON Web Token) tabanlı güvenli giriş sistemi. Kullanıcı şifreleri BCrypt ile şifrelenerek veritabanında saklanmaktadır.
