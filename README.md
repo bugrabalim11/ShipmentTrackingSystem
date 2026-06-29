@@ -14,9 +14,9 @@ Proje, bağımsız bir RESTful API arka ucu (Backend) ve bu API ile haberleşen 
 | :---: | :---: | :---: | :---: |
 | ![Güncelle](https://github.com/user-attachments/assets/0337744e-a24a-45e9-8feb-2856b0387608) | ![Ekle](https://github.com/user-attachments/assets/24fe7575-a350-4ead-ae4f-52ec8c3fb2d9) | ![Personel](https://github.com/user-attachments/assets/f8633e0b-3334-4964-ac22-d20d10d8eed4) | ![Geçmiş](https://github.com/user-attachments/assets/72661fa9-72a0-492d-953c-2ce49ec58982) |
 
-| Personel Düzenle | Yeni Personel Kaydı |
+| Personel Düzenle | Yeni Personel Kaydı | Ana Sayfa/Kargo Sorgula |
 | :---: | :---: |
-| ![Düzenle](https://github.com/user-attachments/assets/ab9d5c43-c065-4a64-98b2-698717cc8544) | ![Kayıt](https://github.com/user-attachments/assets/696fde5a-58a5-4f76-993e-e37ab98d360d) |
+| ![Düzenle](https://github.com/user-attachments/assets/ab9d5c43-c065-4a64-98b2-698717cc8544) | ![Kayıt](https://github.com/user-attachments/assets/696fde5a-58a5-4f76-993e-e37ab98d360d) | ![Ana Sayfa/Kargo Sorgula](https://github.com/user-attachments/assets/d1a57332-3524-4dd6-aa60-d44e619fac5c) |
 🚀 Proje Özellikleri
 
 - Kimlik Doğrulama & Yetkilendirme (Auth): JWT (JSON Web Token) tabanlı güvenli giriş sistemi. Kullanıcı şifreleri BCrypt ile şifrelenerek veritabanında saklanmaktadır.
@@ -87,7 +87,6 @@ Update-Database
 4- Çözüme (Solution) sağ tıklayıp "Set Startup Projects" seçeneğine gidin. Hem API hem de WebUI projelerinin "Start" olarak ayarlandığından emin olun (Multiple startup projects).
 
 5- Projeyi başlatın.
-
 💡 Geliştirici Notu
 
 "Benim adım Buğra. Yönetim Bilişim Sistemleri (YBS) 2. sınıf öğrencisiyim. Bu proje, sadece eğitim videolarını izleyerek değil; arka plandaki yazılım mimarisini, N-Tier yapılarını, Clean Code prensiplerini ve 'Best Practice' standartlarını sorgulayarak, yapay zeka tabanlı Senior Kodlama Mentorüm (Gemini) ile omuz omuza, interaktif bir şekilde geliştirilmiştir. Kopyala-yapıştır yapmaktan ziyade, sistemin nasıl çalıştığını (Under the hood) anlayarak kodlanmıştır."
